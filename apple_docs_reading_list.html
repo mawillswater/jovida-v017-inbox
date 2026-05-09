@@ -824,7 +824,7 @@
         <ol>
           <li>Adding interactivity to widgets and Live Activities</li>
           <li>Dynamic Island / DynamicIslandExpandedContent</li>
-          <li>Update or end your Live Activity with push</li>
+          <li>Starting and updating Live Activities with push</li>
           <li>UIPasteboard + UIPasteControl</li>
         </ol>
       </div>
@@ -835,7 +835,6 @@
         </div>
         <h5>Implementation · 工程链路</h5>
         <ol>
-          <li>Starting Live Activities with push（push-to-start）</li>
           <li>App Intents / App Shortcuts</li>
           <li>UNNotificationAction</li>
           <li>HIG · Shortcuts、HIG · Notifications</li>
@@ -1001,10 +1000,16 @@
       <div class="marg">i.</div>
       <div class="body">
         <div class="doc-head">
-          <div class="doc-title"><a href="https://developer.apple.com/documentation/activitykit/update-or-end-your-live-activity-with-activitykit-push-notifications" target="_blank">Update or End Your Live Activity with ActivityKit Push Notifications</a></div>
-          <div class="badges"><span class="badge must">Must-read</span><span class="badge ref">Server-side</span></div>
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/activitykit/starting-and-updating-live-activities-with-activitykit-push-notifications" target="_blank">Starting and Updating Live Activities with ActivityKit Push Notifications</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge ref">Server-side</span><span class="badge ref">iOS 17.2+</span></div>
         </div>
-        <div class="url"><a href="https://developer.apple.com/documentation/activitykit/update-or-end-your-live-activity-with-activitykit-push-notifications" target="_blank">developer.apple.com/documentation/activitykit/update-or-end-your-live-activity-with-activitykit-push-notifications</a></div>
+        <div class="url"><a href="https://developer.apple.com/documentation/activitykit/starting-and-updating-live-activities-with-activitykit-push-notifications" target="_blank">developer.apple.com/documentation/activitykit/starting-and-updating-live-activities-with-activitykit-push-notifications</a></div>
+        <div class="focus">必读章节（Apple 已合并 update / push-to-start 为单页）</div>
+        <ul class="reading-list">
+          <li><span class="step">01</span>Configure your app to receive ActivityKit push notifications</li>
+          <li><span class="step">02</span>Update or end a Live Activity with push notifications —— 服务端排好剧本按时推</li>
+          <li><span class="step">03</span>Start a Live Activity with a push notification（iOS 17.2+） —— 全天接力陪伴的关键</li>
+        </ul>
         <div class="quote-block">
           <div class="qen">To remotely update or end a Live Activity, your app server sends ActivityKit push notifications. The push notification payload contains the updated content state for the Live Activity, the alert configuration, and an optional dismissal date.</div>
           <div class="qcn">要远程更新或结束 Live Activity，你的 app 服务器发送 ActivityKit 推送通知。推送 payload 包含：更新后的 ContentState、alert 配置、可选的关闭时间。</div>
@@ -1015,17 +1020,6 @@
           <div class="qcn">系统对高优先级推送做预算管控。每小时大约有 16 条高优 push 的预算。如果超出预算，系统会把你的 push 降为低优先级处理。</div>
           <div class="qint">实际预算是 ~16 条/小时。Jovida 一天三个 LA 状态切换远远不会触顶，但要警惕"每分钟都更新进度"的设想——必须用 <code>Text(timerInterval:)</code> 让系统帮你刷，而不是 push 刷。</div>
         </div>
-      </div>
-    </div>
-
-    <div class="doc">
-      <div class="marg">ii.</div>
-      <div class="body">
-        <div class="doc-head">
-          <div class="doc-title"><a href="https://developer.apple.com/documentation/activitykit/starting-live-activities-with-activitykit-push-notifications" target="_blank">Starting Live Activities with ActivityKit Push Notifications</a></div>
-          <div class="badges"><span class="badge should">Should-read</span><span class="badge ref">iOS 17.2+</span></div>
-        </div>
-        <div class="url"><a href="https://developer.apple.com/documentation/activitykit/starting-live-activities-with-activitykit-push-notifications" target="_blank">developer.apple.com/documentation/activitykit/starting-live-activities-with-activitykit-push-notifications</a></div>
         <div class="quote-block">
           <div class="qen"><b>Starting with iOS 17.2</b>, your app can start a Live Activity with an ActivityKit push notification. The system delivers the push notification to your app, which starts the Live Activity using the content state from the push.</div>
           <div class="qcn">从 <b>iOS 17.2</b> 起，你的 app 可以通过 ActivityKit 推送通知来启动一个 Live Activity。系统把 push 送达你的 app，app 用 push 中的 ContentState 启动 LA。</div>
