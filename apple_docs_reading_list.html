@@ -1,0 +1,1449 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Required Reading · Apple Documentation for Jovida v0.17</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#efe7d6;
+    --paper-2:#e8dfca;
+    --paper-deep:#dcd0b5;
+    --ink:#1a1310;
+    --ink-soft:#3a2e25;
+    --ink-mute:#736657;
+    --rule:#1a1310;
+    --oxblood:#8c2018;
+    --oxblood-deep:#5e0f0a;
+    --forest:#2c4435;
+    --gold:#9a6c1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Newsreader","Songti SC","Source Han Serif SC",Georgia,serif;
+    font-weight:400;
+    font-size:15.5px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* Paper grain overlay */
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(140,32,24,.025) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(44,68,53,.03) 0%, transparent 40%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0.10 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 0.10 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    pointer-events:none;
+    mix-blend-mode:multiply;
+    opacity:.5;
+    z-index:1;
+  }
+
+  a{color:var(--oxblood);text-decoration:none;border-bottom:1px solid rgba(140,32,24,.35);transition:border-color .2s}
+  a:hover{border-bottom-color:var(--oxblood)}
+  em,i{font-style:italic}
+  ::selection{background:var(--oxblood);color:var(--paper)}
+
+  .display{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-variation-settings:"opsz" 72;
+    letter-spacing:-.012em;
+  }
+
+  /* Layout */
+  .sheet{
+    max-width:1280px;
+    margin:0 auto;
+    padding:40px 56px 72px;
+    position:relative;
+    z-index:2;
+  }
+
+  /* Crest / hero */
+  header.crest{
+    border-top:5px double var(--rule);
+    border-bottom:1px solid var(--rule);
+    padding:18px 0 28px;
+    margin-bottom:40px;
+    position:relative;
+  }
+  .crest .meta-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    padding-bottom:18px;
+    border-bottom:1px solid rgba(26,19,16,.18);
+    margin-bottom:22px;
+  }
+  .crest .meta-row span:nth-child(2){letter-spacing:.4em}
+
+  .crest h1{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-variation-settings:"opsz" 72;
+    font-size:clamp(48px,7vw,88px);
+    line-height:.98;
+    letter-spacing:-.025em;
+    color:var(--ink);
+    margin-bottom:8px;
+  }
+  .crest h1 .accent{
+    color:var(--oxblood);
+    display:inline-block;
+  }
+  .crest .lede{
+    margin-top:24px;
+    display:grid;
+    grid-template-columns:180px 1fr;
+    gap:40px;
+    align-items:start;
+  }
+  .crest .lede .label{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    padding-top:6px;
+    border-top:2px solid var(--rule);
+    line-height:1.4;
+  }
+  .crest .lede .label .sub{
+    color:var(--ink-soft);
+    text-transform:none;
+    letter-spacing:.04em;
+    font-family:"Newsreader",serif;
+    font-size:12.5px;
+    margin-top:4px;
+    display:block;
+  }
+  .crest .lede p{
+    font-family:"Newsreader",serif;
+    font-size:16.5px;
+    font-variation-settings:"opsz" 18;
+    line-height:1.55;
+    color:var(--ink-soft);
+    max-width:68ch;
+  }
+
+  /* Drop cap */
+  .dropcap::first-letter{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-variation-settings:"opsz" 72;
+    font-size:3.4em;
+    line-height:.85;
+    float:left;
+    margin:.04em .12em -.04em 0;
+    color:var(--oxblood);
+  }
+
+  /* Decorative ornament */
+  .ornament{
+    text-align:center;
+    color:var(--ink-mute);
+    font-size:14px;
+    letter-spacing:1em;
+    margin:28px 0;
+    opacity:.5;
+  }
+
+  /* Section · TOC */
+  section.toc-block{
+    padding:18px 0 24px;
+    border-bottom:1px solid var(--rule);
+    margin-bottom:36px;
+    display:grid;
+    grid-template-columns:140px 1fr;
+    gap:36px;
+    align-items:start;
+  }
+  .toc-block .roman{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-variation-settings:"opsz" 72;
+    font-size:34px;
+    line-height:1;
+    color:var(--oxblood);
+    letter-spacing:-.01em;
+  }
+  .toc-block .toc-head{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;
+    letter-spacing:.24em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    margin-top:8px;
+  }
+  .toc-list{
+    list-style:none;
+    columns:2;
+    column-gap:36px;
+    column-rule:1px solid rgba(26,19,16,.12);
+  }
+  .toc-list li{
+    break-inside:avoid;
+    padding:5px 0;
+    border-bottom:1px dotted rgba(26,19,16,.22);
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    font-size:14px;
+  }
+  .toc-list li .num{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;
+    color:var(--ink-mute);
+    letter-spacing:.06em;
+    min-width:24px;
+  }
+  .toc-list li a{
+    border-bottom:none;
+    color:var(--ink);
+    flex:1;
+    font-family:"Newsreader",serif;
+  }
+  .toc-list li a:hover{color:var(--oxblood)}
+  .toc-list li .pg{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;
+    color:var(--ink-mute);
+  }
+
+  /* Priority block */
+  section.priority{
+    margin-bottom:48px;
+  }
+  .priority-head{
+    display:grid;
+    grid-template-columns:140px 1fr;
+    gap:36px;
+    align-items:end;
+    border-bottom:5px double var(--rule);
+    padding-bottom:14px;
+    margin-bottom:22px;
+  }
+  .priority-head .roman{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-variation-settings:"opsz" 72;
+    font-size:64px;
+    line-height:.85;
+    color:var(--oxblood);
+    letter-spacing:-.02em;
+  }
+  .priority-head h2{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-variation-settings:"opsz" 72;
+    font-size:30px;
+    line-height:1.05;
+    letter-spacing:-.015em;
+    color:var(--ink);
+  }
+  .priority-head h2 em{
+    color:var(--oxblood);
+    display:block;
+    font-size:.55em;
+    margin-top:4px;
+    font-weight:400;
+    font-style:italic;
+    letter-spacing:0;
+  }
+
+  .pri-cols{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:0;
+  }
+  .pri{
+    padding:18px 22px 16px;
+    border-right:1px solid rgba(26,19,16,.18);
+    position:relative;
+  }
+  .pri:last-child{border-right:none}
+  .pri:first-child{padding-left:0}
+  .pri:last-child{padding-right:0}
+  .pri .header-row{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:8px;
+    padding-bottom:8px;
+    border-bottom:1px solid rgba(26,19,16,.18);
+  }
+  .pri .grade{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-variation-settings:"opsz" 72;
+    font-size:34px;
+    line-height:.9;
+    letter-spacing:-.02em;
+  }
+  .pri.p1 .grade{color:var(--oxblood)}
+  .pri.p2 .grade{color:var(--gold)}
+  .pri.p3 .grade{color:var(--forest)}
+  .pri .tag{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+  }
+  .pri h5{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-variation-settings:"opsz" 24;
+    font-size:15px;
+    margin-bottom:8px;
+    color:var(--ink);
+  }
+  .pri ol{
+    list-style:none;
+    counter-reset:p;
+  }
+  .pri ol li{
+    counter-increment:p;
+    padding:5px 0 5px 28px;
+    position:relative;
+    font-size:13.5px;
+    color:var(--ink-soft);
+    border-bottom:1px dotted rgba(26,19,16,.16);
+    line-height:1.4;
+  }
+  .pri ol li:last-child{border-bottom:none}
+  .pri ol li::before{
+    content:counter(p,decimal-leading-zero);
+    position:absolute;
+    left:0;top:5px;
+    font-family:"JetBrains Mono",monospace;
+    font-size:10px;
+    color:var(--ink-mute);
+    letter-spacing:.04em;
+  }
+
+  /* Topic sections */
+  section.topic{
+    margin:48px 0;
+    position:relative;
+  }
+  .topic-head{
+    display:grid;
+    grid-template-columns:140px 1fr;
+    gap:32px;
+    align-items:end;
+    margin-bottom:24px;
+    padding-bottom:14px;
+    border-bottom:5px double var(--rule);
+  }
+  .topic-head .index{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-variation-settings:"opsz" 72;
+    font-size:96px;
+    line-height:.8;
+    color:var(--paper-deep);
+    -webkit-text-stroke:1.5px var(--ink);
+    letter-spacing:-.04em;
+    margin-bottom:-6px;
+  }
+  .topic-head .title-block .label{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;
+    letter-spacing:.24em;
+    text-transform:uppercase;
+    color:var(--oxblood);
+    margin-bottom:6px;
+  }
+  .topic-head h2{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-variation-settings:"opsz" 72;
+    font-size:30px;
+    line-height:1.1;
+    letter-spacing:-.015em;
+    margin-bottom:6px;
+  }
+  .topic-head h2 .accent{
+    color:var(--oxblood);
+    font-weight:700;
+  }
+  .topic-head .sub{
+    font-family:"Newsreader",serif;
+    font-size:14.5px;
+    color:var(--ink-mute);
+    line-height:1.5;
+    max-width:72ch;
+  }
+
+  /* Doc entry */
+  .doc{
+    display:grid;
+    grid-template-columns:44px 1fr;
+    gap:20px;
+    padding:18px 0;
+    border-bottom:1px solid rgba(26,19,16,.18);
+    position:relative;
+  }
+  .doc:last-child{border-bottom:none}
+  .doc .marg{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-variation-settings:"opsz" 24;
+    font-size:18px;
+    line-height:1.1;
+    color:var(--oxblood);
+    text-align:right;
+    padding-top:3px;
+    border-right:1px solid rgba(26,19,16,.4);
+    padding-right:14px;
+    letter-spacing:.02em;
+  }
+
+  .doc-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:18px;
+    margin-bottom:4px;
+    flex-wrap:wrap;
+  }
+  .doc-title{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-variation-settings:"opsz" 36;
+    font-size:19px;
+    line-height:1.25;
+    flex:1;
+    min-width:240px;
+    letter-spacing:-.005em;
+  }
+  .doc-title a{
+    color:var(--ink);
+    border-bottom:none;
+    background-image:linear-gradient(transparent 92%,var(--ink) 92%, var(--ink) 96%, transparent 96%);
+    transition:background-position .3s,color .2s;
+  }
+  .doc-title a:hover{
+    color:var(--oxblood);
+    background-image:linear-gradient(transparent 92%,var(--oxblood) 92%, var(--oxblood) 96%, transparent 96%);
+  }
+
+  .badges{
+    display:flex;
+    gap:0;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .badge{
+    font-family:"JetBrains Mono",monospace;
+    font-size:9.5px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    padding:2px 8px;
+    border-left:1px solid rgba(26,19,16,.3);
+    color:var(--ink-mute);
+    line-height:1.3;
+  }
+  .badge:first-child{border-left:none;padding-left:0}
+  .badge.must{color:var(--oxblood);font-weight:700}
+  .badge.should{color:var(--gold);font-weight:700}
+  .badge.ref{color:var(--forest)}
+  .badge.video{color:var(--ink);font-family:"Newsreader",serif;text-transform:none;letter-spacing:.02em;font-size:12px;font-weight:500}
+  .badge.hig{color:var(--oxblood-deep)}
+
+  .url{
+    font-family:"JetBrains Mono",monospace;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink);
+    margin:8px 0 14px;
+    word-break:break-all;
+    letter-spacing:.005em;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    max-width:100%;
+    padding:7px 14px 7px 12px;
+    background:rgba(140,32,24,.075);
+    border-left:3px solid var(--oxblood);
+    border-right:1px solid rgba(140,32,24,.18);
+    transition:background .2s,border-color .2s;
+    position:relative;
+  }
+  .url::before{
+    content:"↗";
+    color:var(--oxblood);
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-size:16px;
+    line-height:1;
+    transition:transform .25s ease;
+    flex-shrink:0;
+  }
+  .url::after{
+    content:"OPEN";
+    font-family:"JetBrains Mono",monospace;
+    font-size:9.5px;
+    font-weight:700;
+    letter-spacing:.18em;
+    color:var(--oxblood);
+    margin-left:4px;
+    padding-left:10px;
+    border-left:1px solid rgba(140,32,24,.3);
+    flex-shrink:0;
+  }
+  .url a{
+    color:var(--ink);
+    border-bottom:none;
+    flex:1;
+    min-width:0;
+    word-break:break-all;
+  }
+  .url:hover{
+    background:rgba(140,32,24,.13);
+    border-right-color:var(--oxblood);
+  }
+  .url:hover::before{transform:translateX(2px) translateY(-2px)}
+  .url:hover a{color:var(--oxblood-deep)}
+
+  .focus{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+    margin:12px 0 6px;
+    padding-top:10px;
+    border-top:1px solid rgba(26,19,16,.12);
+  }
+  .focus::before{content:"§ "}
+
+  .reading-list{list-style:none;margin:4px 0 4px}
+  .reading-list li{
+    padding:3px 0 3px 32px;
+    position:relative;
+    font-size:13.5px;
+    line-height:1.5;
+    color:var(--ink-soft);
+  }
+  .reading-list li .step{
+    position:absolute;
+    left:0;top:3px;
+    font-family:"JetBrains Mono",monospace;
+    font-size:10px;
+    color:var(--oxblood);
+    letter-spacing:.04em;
+    font-weight:700;
+  }
+  .reading-list li .step::after{content:" ·"}
+
+  /* Annotation blocks */
+  .quote-block{
+    margin:12px 0 4px;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:0;
+    border-left:1px solid rgba(26,19,16,.25);
+    padding-left:16px;
+  }
+  .qen,.qcn,.qint{
+    padding:10px 0;
+    border-bottom:1px dotted rgba(26,19,16,.18);
+    position:relative;
+  }
+  .qen:last-child,.qcn:last-child,.qint:last-child{border-bottom:none}
+
+  .qen::before,.qcn::before,.qint::before{
+    display:block;
+    font-family:"JetBrains Mono",monospace;
+    font-size:9.5px;
+    letter-spacing:.24em;
+    text-transform:uppercase;
+    margin-bottom:5px;
+    font-weight:700;
+  }
+  .qen{
+    font-family:"Newsreader",serif;
+    font-size:14.5px;
+    font-variation-settings:"opsz" 16;
+    line-height:1.5;
+    color:var(--ink);
+  }
+  .qen::before{
+    content:"✦ Original · Apple Documentation";
+    color:var(--forest);
+  }
+  .qcn{
+    font-family:"Newsreader",serif;
+    font-size:14.5px;
+    line-height:1.6;
+    color:var(--ink-soft);
+  }
+  .qcn::before{
+    content:"❖ Translation · 中文";
+    color:var(--gold);
+  }
+  .qint{
+    font-family:"Newsreader",serif;
+    font-size:14.5px;
+    line-height:1.6;
+    color:var(--ink);
+    background:linear-gradient(to right,rgba(140,32,24,.05),transparent 80%);
+    padding:10px 14px;
+    margin-left:-14px;
+    border-left:3px solid var(--oxblood);
+  }
+  .qint::before{
+    content:"⁂ Annotation · PM 解读 · 对 Jovida 的意义";
+    color:var(--oxblood);
+  }
+  .qint b{font-weight:700;color:var(--oxblood-deep);background:rgba(140,32,24,.08);padding:0 3px}
+  .qen b{color:var(--oxblood-deep);font-weight:700}
+  .qcn b{font-weight:700;color:var(--ink)}
+
+  code{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.85em;
+    background:rgba(26,19,16,.06);
+    padding:1px 5px;
+    color:var(--oxblood-deep);
+    border-bottom:1px solid rgba(140,32,24,.2);
+  }
+
+  /* Closing summary */
+  .colophon{
+    margin-top:48px;
+    padding:32px 36px;
+    background:var(--paper-2);
+    border-top:5px double var(--rule);
+    border-bottom:5px double var(--rule);
+    position:relative;
+  }
+  .colophon::before{
+    content:"";
+    position:absolute;
+    top:-18px;left:50%;
+    transform:translateX(-50%);
+    width:32px;height:32px;
+    background:var(--paper);
+    border:1px solid var(--rule);
+    border-radius:50%;
+  }
+  .colophon::after{
+    content:"⁂";
+    position:absolute;
+    top:-15px;left:50%;
+    transform:translateX(-50%);
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-size:18px;
+    color:var(--oxblood);
+  }
+  .colophon h4{
+    font-family:"Newsreader",serif;
+    font-weight:700;
+    font-variation-settings:"opsz" 48;
+    font-size:22px;
+    line-height:1.2;
+    margin-bottom:14px;
+    color:var(--ink);
+    max-width:32ch;
+    letter-spacing:-.012em;
+  }
+  .colophon h4 .accent{color:var(--oxblood)}
+  .week{
+    display:grid;
+    grid-template-columns:110px 1fr;
+    gap:20px;
+    padding:8px 0;
+    border-bottom:1px dotted rgba(26,19,16,.22);
+  }
+  .week:last-of-type{border-bottom:none}
+  .week .w{
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--oxblood);
+    padding-top:3px;
+    font-weight:700;
+  }
+  .week .what{
+    font-family:"Newsreader",serif;
+    font-size:14.5px;
+    line-height:1.55;
+    color:var(--ink-soft);
+  }
+  .closer{
+    margin-top:18px;
+    font-family:"Newsreader",serif;
+    font-style:italic;
+    font-size:13.5px;
+    color:var(--ink-mute);
+    line-height:1.55;
+    max-width:72ch;
+  }
+
+  /* Footer */
+  footer.colophon-foot{
+    margin-top:24px;
+    padding-top:18px;
+    border-top:1px solid rgba(26,19,16,.2);
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    font-family:"JetBrains Mono",monospace;
+    font-size:10.5px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--ink-mute);
+  }
+  footer.colophon-foot a{color:var(--ink);border-bottom:1px solid var(--ink)}
+  footer.colophon-foot a:hover{color:var(--oxblood);border-bottom-color:var(--oxblood)}
+  footer .right{text-align:right}
+
+  /* Reveal animation */
+  @keyframes riseIn{
+    from{opacity:0;transform:translateY(12px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  .crest h1, .crest .lede, .priority-head, .topic-head, .colophon{
+    animation:riseIn .6s cubic-bezier(.2,.7,.2,1) both;
+  }
+  .crest .lede{animation-delay:.1s}
+  .priority-head{animation-delay:.18s}
+
+  @media (max-width:900px){
+    .sheet{padding:24px 18px 56px}
+    .crest .meta-row{flex-direction:column;gap:6px;align-items:flex-start}
+    .crest h1{font-size:42px}
+    .crest .lede{grid-template-columns:1fr;gap:14px}
+    .toc-block,.priority-head,.topic-head{grid-template-columns:1fr;gap:16px}
+    .topic-head .index{font-size:64px}
+    .priority-head .roman{font-size:48px}
+    .pri-cols{grid-template-columns:1fr;gap:0}
+    .pri{border-right:none;border-bottom:1px solid rgba(26,19,16,.18);padding:16px 0}
+    .pri:first-child{padding-top:0}
+    .pri:last-child{padding-bottom:0;border-bottom:none}
+    .doc{grid-template-columns:1fr;gap:8px}
+    .doc .marg{text-align:left;border-right:none;border-bottom:1px solid rgba(26,19,16,.4);padding:0 0 6px;font-size:14px}
+    .toc-list{columns:1;column-rule:none}
+    .colophon{padding:24px 18px}
+    .week{grid-template-columns:1fr;gap:4px}
+    footer.colophon-foot{grid-template-columns:1fr;gap:8px}
+    footer .right{text-align:left}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <!-- HERO -->
+  <header class="crest">
+    <div class="meta-row">
+      <span>Vol. 0.17 · Issue 01</span>
+      <span>Required Reading</span>
+      <span>2026 · 05 · 09</span>
+    </div>
+    <h1>Apple Required <span class="accent">Reading.</span></h1>
+    <div class="lede">
+      <div class="label">Editor's Note<span class="sub">For the Jovida v0.17 Product Team</span></div>
+      <p class="dropcap">本期 Jovida 迭代触及三块 Apple 高敏感地带：Live Activity 锁屏触点、灵动岛三态、外部信息导入（双击背面、剪贴板、暂存夹）。任何在产品稿落字之前没读过这些官方文档与 HIG 规范的人，都会在工程实施或审核环节为之买单。下文按主题与优先级，列出 11 个章节、近 30 篇必读资料，每条配 <em>原文 · 翻译 · 解读</em>。读完，方能下场。</p>
+    </div>
+  </header>
+
+  <!-- TOC -->
+  <section class="toc-block">
+    <div>
+      <div class="roman">Contents</div>
+      <div class="toc-head">Index of Chapters</div>
+    </div>
+    <ol class="toc-list">
+      <li><span class="num">00</span><a href="#priority">Reading Priority — 阅读优先级</a><span class="pg">p.01</span></li>
+      <li><span class="num">A</span><a href="#activitykit">ActivityKit / Live Activity 基础</a><span class="pg">p.02</span></li>
+      <li><span class="num">B</span><a href="#dynamic-island">Dynamic Island 三态</a><span class="pg">p.04</span></li>
+      <li><span class="num">C</span><a href="#push-update">Push 更新 / 远程启动</a><span class="pg">p.05</span></li>
+      <li><span class="num">D</span><a href="#interactive">Interactive Widgets · 按钮交互</a><span class="pg">p.06</span></li>
+      <li><span class="num">E</span><a href="#hig-live">HIG · Live Activities 设计规范</a><span class="pg">p.07</span></li>
+      <li><span class="num">F</span><a href="#shortcuts">App Intents / Shortcuts 快捷指令</a><span class="pg">p.08</span></li>
+      <li><span class="num">G</span><a href="#back-tap">Back Tap · 双击背面</a><span class="pg">p.09</span></li>
+      <li><span class="num">H</span><a href="#pasteboard">UIPasteboard · 剪贴板与隐私</a><span class="pg">p.10</span></li>
+      <li><span class="num">I</span><a href="#pip">Picture-in-Picture · 灰色路径</a><span class="pg">p.11</span></li>
+      <li><span class="num">J</span><a href="#notifications">UNNotificationAction · 可操作通知</a><span class="pg">p.12</span></li>
+      <li><span class="num">K</span><a href="#privacy">App Privacy · 隐私清单</a><span class="pg">p.13</span></li>
+    </ol>
+  </section>
+
+  <div class="ornament">✦ ❖ ✦</div>
+
+  <!-- PRIORITY -->
+  <section class="priority" id="priority">
+    <div class="priority-head">
+      <div class="roman">00</div>
+      <h2>Reading Priority<em>阅读优先级 · 由强到弱排</em></h2>
+    </div>
+    <div class="pri-cols">
+      <div class="pri p1">
+        <div class="header-row">
+          <div class="grade">P0</div>
+          <div class="tag">Tier I · 立即读完</div>
+        </div>
+        <h5>Foundation · 地基章</h5>
+        <ol>
+          <li>ActivityKit 概览</li>
+          <li>Displaying live data with Live Activities</li>
+          <li>HIG · Live Activities</li>
+          <li>WWDC23 · Meet ActivityKit（视频）</li>
+        </ol>
+      </div>
+      <div class="pri p2">
+        <div class="header-row">
+          <div class="grade">P1</div>
+          <div class="tag">Tier II · 详设阶段</div>
+        </div>
+        <h5>Specs · 落细节</h5>
+        <ol>
+          <li>Adding interactivity to widgets and Live Activities</li>
+          <li>Dynamic Island / DynamicIslandExpandedContent</li>
+          <li>Update or end your Live Activity with push</li>
+          <li>UIPasteboard + UIPasteControl</li>
+        </ol>
+      </div>
+      <div class="pri p3">
+        <div class="header-row">
+          <div class="grade">P2</div>
+          <div class="tag">Tier III · 工程介入前</div>
+        </div>
+        <h5>Implementation · 工程链路</h5>
+        <ol>
+          <li>Starting Live Activities with push（push-to-start）</li>
+          <li>App Intents / App Shortcuts</li>
+          <li>UNNotificationAction</li>
+          <li>HIG · Shortcuts、HIG · Notifications</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <div class="ornament">✦ ❖ ✦</div>
+
+  <!-- A. ActivityKit -->
+  <section class="topic" id="activitykit">
+    <div class="topic-head">
+      <div class="index">A</div>
+      <div class="title-block">
+        <div class="label">Chapter A · 主题② 技术地基</div>
+        <h2>ActivityKit <span class="accent">/ Live Activity 基础</span></h2>
+        <div class="sub">先把"什么是 LA、能做什么、不能做什么"读透。后续所有判断的根。</div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">i.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/activitykit" target="_blank">ActivityKit · Apple Developer</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge ref">Framework</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/activitykit" target="_blank">developer.apple.com/documentation/activitykit</a></div>
+        <div class="focus">必读章节</div>
+        <ul class="reading-list">
+          <li><span class="step">01</span>Overview（整体能力 &amp; 限制）</li>
+          <li><span class="step">02</span>Activity / ActivityAttributes / ContentState 三个核心类型</li>
+          <li><span class="step">03</span>Lifecycle（request / update / end）</li>
+        </ul>
+        <div class="quote-block">
+          <div class="qen">Use the ActivityKit framework to start, update, and stop Live Activities that show your app's most current data on the iPhone Lock Screen and in the Dynamic Island. Live Activities use a <b>subset of SwiftUI and WidgetKit</b>, and update their information using ActivityKit or remote push notifications.</div>
+          <div class="qcn">用 ActivityKit 来启动、更新和结束 Live Activity，在 iPhone 锁屏与灵动岛上展示你 app 当前最新的数据。Live Activity 使用的是 SwiftUI 和 WidgetKit 的<b>子集</b>，通过 ActivityKit 或远程推送通知来更新内容。</div>
+          <div class="qint">"SwiftUI 子集"四个字是关键——别假设你能用任何 SwiftUI 控件。Jovida 兔子角色的所有视觉表达，必须落在 WidgetKit 支持的范围内（<b>不能 ScrollView、不能输入、不能拉网络图</b>）。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">ii.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/activitykit/displaying-live-data-with-live-activities" target="_blank">Displaying Live Data with Live Activities</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge ref">Implementation</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/activitykit/displaying-live-data-with-live-activities" target="_blank">developer.apple.com/documentation/activitykit/displaying-live-data-with-live-activities</a></div>
+        <div class="focus">必读章节</div>
+        <ul class="reading-list">
+          <li><span class="step">01</span>Configure your app and Live Activity（Info.plist 配置）</li>
+          <li><span class="step">02</span>Define the data and views（ActivityAttributes / ContentState）</li>
+          <li><span class="step">03</span>Display Live Activity views（lockScreen / dynamicIsland 三态）</li>
+          <li><span class="step">04</span>Update and end a Live Activity ——回答了"早上启动晚上变内容怎么实现"</li>
+        </ul>
+        <div class="quote-block">
+          <div class="qen">A Live Activity displays up-to-date information from your app on the iPhone Lock Screen and in the Dynamic Island, allowing people to see the live status of an event at a glance. <b>People start Live Activities for events that they want to follow closely</b>, and your app updates the Live Activity with the most recent information.</div>
+          <div class="qcn">Live Activity 在 iPhone 锁屏和灵动岛上展示来自你 app 的实时信息，让用户瞥一眼就能看到某个事件的当前状态。<b>用户主动为他们想持续关注的事件启动 Live Activity</b>，你的 app 用最新数据来更新它。</div>
+          <div class="qint"><b>"主动启动"</b>是个隐含强约束 —— LA 不是后台默默自启的"通知 2.0"。Jovida 想做"全天角色陪伴"必须通过用户能感知的入口（点 desire 卡 / 接 push 提醒）启动一段事件，且必须有 visible end。</div>
+        </div>
+        <div class="quote-block">
+          <div class="qen">Live Activities can run on the Lock Screen and in the Dynamic Island for <b>up to 8 hours</b> unless your app or a person ends them sooner. After 8 hours, the system ends the Live Activity. However, the system displays an ended Live Activity on the Lock Screen for up to 4 hours after the Live Activity ends or until a person manually removes it.</div>
+          <div class="qcn">Live Activity 在锁屏和灵动岛上最多可以运行 <b>8 小时</b>（除非你的 app 或用户提前结束）。8 小时后，系统会自动结束 LA。但是结束态的 LA 仍会在锁屏上保留最长 4 小时，直到用户手动移除。</div>
+          <div class="qint">8h active + 4h stale = 12h 上限。这意味着<b>"全天陪伴"必须接力</b>：早 8 点启动到 16 点自动结束，下午要靠 push-to-start（iOS 17.2+）或用户重启接续。设计文案要避免承诺"全天"，改成"每段事件"。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">iii.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/videos/play/wwdc2023/10184/" target="_blank">WWDC 23 · Meet ActivityKit</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge video">Video · 25 min</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/videos/play/wwdc2023/10184/" target="_blank">developer.apple.com/videos/play/wwdc2023/10184</a></div>
+        <div class="focus">观看要点</div>
+        <ul class="reading-list">
+          <li><span class="step">01</span>整个生命周期 demo（5'00"–12'00"）</li>
+          <li><span class="step">02</span>Push 更新与 ActivityKit push token（15'00" 起）</li>
+          <li><span class="step">03</span>配套 design 视频："Design dynamic Live Activities"</li>
+        </ul>
+        <div class="quote-block">
+          <div class="qint">25 分钟过完整个心智模型最快路径。看完之后再去翻文档会快 3 倍。建议<b>设计师 + PM + iOS 工程师一起看一遍</b>。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">iv.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/videos/play/wwdc2023/10194/" target="_blank">WWDC 23 · Design Dynamic Live Activities</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge video">Video · 设计向</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/videos/play/wwdc2023/10194/" target="_blank">developer.apple.com/videos/play/wwdc2023/10194</a></div>
+        <div class="quote-block">
+          <div class="qint">设计师必看。讲了灵动岛三态的设计语言、过渡动画的边界、品牌如何在压缩信息里保留辨识度。Jovida 兔子在 Compact 区只有 ~50pt 宽，怎么仅靠侧脸/状态色保持识别度——答案在这个 session 里。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- B. Dynamic Island -->
+  <section class="topic" id="dynamic-island">
+    <div class="topic-head">
+      <div class="index">B</div>
+      <div class="title-block">
+        <div class="label">Chapter B · 灵动岛三态</div>
+        <h2>Dynamic Island <span class="accent">三态视觉核心</span></h2>
+        <div class="sub">三态各自能放什么、不能放什么必须吃透。</div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">i.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/widgetkit/dynamicisland" target="_blank">DynamicIsland · WidgetKit</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge ref">Type Doc</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/widgetkit/dynamicisland" target="_blank">developer.apple.com/documentation/widgetkit/dynamicisland</a></div>
+        <div class="quote-block">
+          <div class="qen">A structure that defines the regions of a Dynamic Island. The Dynamic Island has multiple regions: a leading region, a trailing region, a center region, and a bottom region. The expanded Live Activity uses these regions to lay out content.</div>
+          <div class="qcn">用于定义灵动岛各区域的结构。灵动岛有多个区域：左侧区、右侧区、中间区、底部区。Live Activity 的展开态会用这些区域来布局内容。</div>
+          <div class="qint">展开态有 4 个 region。但请注意：<b>compact 态没有 center region</b> —— TrueDepth 摄像头胶囊横在中间。Jovida 设计 compact 时必须按"左+右"双区思维（左：兔子头像，右：状态/数字），千万不能假设"中间能放进度条"。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">ii.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/widgetkit/dynamicislandexpandedcontent" target="_blank">DynamicIslandExpandedContent</a></div>
+          <div class="badges"><span class="badge should">Should-read</span><span class="badge ref">展开态详解</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/widgetkit/dynamicislandexpandedcontent" target="_blank">developer.apple.com/documentation/widgetkit/dynamicislandexpandedcontent</a></div>
+        <div class="quote-block">
+          <div class="qen">A type that represents the expanded content of a Dynamic Island Live Activity. The system shows the expanded view when a person <b>touches and holds</b> the compact or minimal view, or when an <b>alert is presented</b> for a Live Activity.</div>
+          <div class="qcn">表示灵动岛 Live Activity 展开内容的类型。系统会在用户<b>长按</b> compact/minimal 视图，或者 Live Activity 触发 <b>alert</b> 时，显示展开视图。</div>
+          <div class="qint">这条澄清了 v0.17 设计稿之前的疑点：<b>展开态不仅仅靠用户长按触发，AlertConfiguration 也能让它自动短暂展开几秒</b>。Jovida 用 alert 做"该护肤啦"的瞬时大卡片提示，是合规且推荐的用法。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- C. Push update -->
+  <section class="topic" id="push-update">
+    <div class="topic-head">
+      <div class="index">C</div>
+      <div class="title-block">
+        <div class="label">Chapter C · 服务端协作</div>
+        <h2>Push Update <span class="accent">/ 远程启动 LA</span></h2>
+        <div class="sub">回答了"用户早上只打开一次 app，怎么让 LA 一天变多次"。</div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">i.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/activitykit/update-or-end-your-live-activity-with-activitykit-push-notifications" target="_blank">Update or End Your Live Activity with ActivityKit Push Notifications</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge ref">Server-side</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/activitykit/update-or-end-your-live-activity-with-activitykit-push-notifications" target="_blank">developer.apple.com/documentation/activitykit/update-or-end-your-live-activity-with-activitykit-push-notifications</a></div>
+        <div class="quote-block">
+          <div class="qen">To remotely update or end a Live Activity, your app server sends ActivityKit push notifications. The push notification payload contains the updated content state for the Live Activity, the alert configuration, and an optional dismissal date.</div>
+          <div class="qcn">要远程更新或结束 Live Activity，你的 app 服务器发送 ActivityKit 推送通知。推送 payload 包含：更新后的 ContentState、alert 配置、可选的关闭时间。</div>
+          <div class="qint">这就是 DoorDash / Flighty 的工作方式：用户启动后，所有内容变化由<b>服务端 push</b> 推到设备，与 app 是否在前台/后台无关。Jovida 想做"早上护肤 → 中午午餐 → 晚上拉伸"的角色切换 —— 必须服务端排好剧本，按时 push。</div>
+        </div>
+        <div class="quote-block">
+          <div class="qen">The system applies budgeting to high-priority push notifications. Your app receives an approximate budget of high-priority push notifications per hour. If you exceed your budget, the system delivers your push notifications with low priority.</div>
+          <div class="qcn">系统对高优先级推送做预算管控。每小时大约有 16 条高优 push 的预算。如果超出预算，系统会把你的 push 降为低优先级处理。</div>
+          <div class="qint">实际预算是 ~16 条/小时。Jovida 一天三个 LA 状态切换远远不会触顶，但要警惕"每分钟都更新进度"的设想——必须用 <code>Text(timerInterval:)</code> 让系统帮你刷，而不是 push 刷。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">ii.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/activitykit/starting-live-activities-with-activitykit-push-notifications" target="_blank">Starting Live Activities with ActivityKit Push Notifications</a></div>
+          <div class="badges"><span class="badge should">Should-read</span><span class="badge ref">iOS 17.2+</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/activitykit/starting-live-activities-with-activitykit-push-notifications" target="_blank">developer.apple.com/documentation/activitykit/starting-live-activities-with-activitykit-push-notifications</a></div>
+        <div class="quote-block">
+          <div class="qen"><b>Starting with iOS 17.2</b>, your app can start a Live Activity with an ActivityKit push notification. The system delivers the push notification to your app, which starts the Live Activity using the content state from the push.</div>
+          <div class="qcn">从 <b>iOS 17.2</b> 起，你的 app 可以通过 ActivityKit 推送通知来启动一个 Live Activity。系统把 push 送达你的 app，app 用 push 中的 ContentState 启动 LA。</div>
+          <div class="qint"><b>这是 Jovida 实现"全天接力陪伴"的关键技术</b>。无需用户白天再次打开 app，服务端在 12:00 push-to-start 一个新 LA（比如"午餐时间"），自然衔接早上那一段。注意：用户必须先在 app 内打开过这类 LA 一次，且 push-to-start 也走同样的预算。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- D. Interactive -->
+  <section class="topic" id="interactive">
+    <div class="topic-head">
+      <div class="index">D</div>
+      <div class="title-block">
+        <div class="label">Chapter D · iOS 17+ 能力</div>
+        <h2>Interactive Widgets <span class="accent">按钮交互</span></h2>
+        <div class="sub">v0.17 中我们最终选择"不在 LA 上放按钮"——但你必须知道"能不能放、放了什么后果"，才能保证这个决策稳。</div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">i.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/widgetkit/adding-interactivity-to-widgets-and-live-activities" target="_blank">Adding Interactivity to Widgets and Live Activities</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge ref">iOS 17+</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/widgetkit/adding-interactivity-to-widgets-and-live-activities" target="_blank">developer.apple.com/documentation/widgetkit/adding-interactivity-to-widgets-and-live-activities</a></div>
+        <div class="quote-block">
+          <div class="qen">In <b>iOS 17 and iPadOS 17</b>, you can add buttons or toggles that initiate app intents from widgets and Live Activities. When a person taps the button or toggle, the system performs the intent.</div>
+          <div class="qcn">在 <b>iOS 17/iPadOS 17</b> 上，你可以在 widget 和 Live Activity 中加入触发 App Intent 的按钮或开关。当用户点按时，系统会执行该 intent。</div>
+          <div class="qint">所谓"放按钮"是 iOS 17 起才支持的能力——iOS 16 用户根本看不到。即使你设计上不放，也要明白：Jovida MVP 用户中如果还有 iOS 16，整个"长按展开 + 按钮"路径必须有<b>降级方案</b>（点击整体打开 app）。</div>
+        </div>
+        <div class="quote-block">
+          <div class="qen">Buttons and toggles in widgets and Live Activities use a special kind of app intent — LiveActivityIntent or AppIntent that doesn't require the app to be open. <b>The system runs the intent in the background.</b></div>
+          <div class="qcn">widget 与 Live Activity 中的按钮和开关使用特殊的 app intent —— 即 LiveActivityIntent 或不需要打开 app 的 AppIntent。<b>系统会在后台执行该 intent</b>。</div>
+          <div class="qint">"后台执行"≠"完全静默"。Apple 给的执行预算只有几秒，做不了网络请求/复杂计算，最多写本地数据库 + 触发一个 push reschedule。如果以后想加"灵动岛打卡"，也必须确保整个流程能在 ~5s 内完成。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">ii.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/appintents/liveactivityintent" target="_blank">LiveActivityIntent · App Intents</a></div>
+          <div class="badges"><span class="badge ref">Reference Type</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/appintents/liveactivityintent" target="_blank">developer.apple.com/documentation/appintents/liveactivityintent</a></div>
+        <div class="quote-block">
+          <div class="qint">技术参考。PM 不必啃细节，但要知道："放按钮"=工程要专门写一个 LiveActivityIntent。<b>设计稿里多出一个按钮，就是工程多写一个 intent + 改 widget extension + 测试一轮</b>。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- E. HIG Live -->
+  <section class="topic" id="hig-live">
+    <div class="topic-head">
+      <div class="index">E</div>
+      <div class="title-block">
+        <div class="label">Chapter E · 审核高发雷区</div>
+        <h2>HIG · Live Activities <span class="accent">设计规范</span></h2>
+        <div class="sub">每条都要逐句对照 v0.17 设计稿。</div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">i.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/design/human-interface-guidelines/live-activities" target="_blank">Human Interface Guidelines · Live Activities</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge hig">HIG</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/design/human-interface-guidelines/live-activities" target="_blank">developer.apple.com/design/human-interface-guidelines/live-activities</a></div>
+        <div class="quote-block">
+          <div class="qen">A Live Activity displays the most current data from your app, letting people view the status of an event or task at a glance. A Live Activity tracks <b>a single, real-time event</b> — typically up to eight hours — that begins, ends, and persists in a way that's important to people.</div>
+          <div class="qcn">Live Activity 展示来自你 app 的最新数据，让用户瞥一眼就能看到某个事件或任务的状态。一个 Live Activity 追踪一个<b>单一的、实时的事件</b>——通常持续最多 8 小时——这个事件的开始、结束和持续过程对用户来说是重要的。</div>
+          <div class="qint">"Single, real-time event"+"important to people" 两条同时成立才合规。Jovida 的"晚安鼓励语"如果只是一句话飘在锁屏，<b>没有进行中的事件、没有开始/结束</b>——审核高风险。务必把每个 LA 包装成"现在正在做某件具体事"（如"睡前拉伸 12 分钟"）。</div>
+        </div>
+        <div class="quote-block">
+          <div class="qen">Avoid using a Live Activity to display ads or promotional content, sensitive information, or content that's <b>unrelated to the event</b> the Live Activity tracks.</div>
+          <div class="qcn">不要用 Live Activity 展示广告/推广内容、敏感信息，或<b>与该 LA 所追踪事件无关的内容</b>。</div>
+          <div class="qint">Jovida 永远不要在 LA 里塞"升级 Pro"、"邀请好友"这些营销点。"角色 IP 出现"算是产品体验的一部分而非广告，但若做"今天兔子穿了限定皮肤，点击购买"——直接拒。</div>
+        </div>
+        <div class="quote-block">
+          <div class="qen">Use alerts <b>sparingly</b> and only for important changes. Frequent alerts can feel intrusive and may prompt people to disable Live Activities for your app.</div>
+          <div class="qcn">克制使用 alert，仅用于重要变化。频繁 alert 会让人觉得被打扰，可能让用户关闭你 app 的 Live Activity。</div>
+          <div class="qint">v0.17 里"灵动岛展开几秒"的设计就是触发 alert。<b>每天最多 2-3 次</b>是合理上限（早起、午间、临睡）。绝不要每个 desire 完成都触发——会被用户关掉 LA 权限。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- F. Shortcuts -->
+  <section class="topic" id="shortcuts">
+    <div class="topic-head">
+      <div class="index">F</div>
+      <div class="title-block">
+        <div class="label">Chapter F · 主题③-A 核心技术</div>
+        <h2>App Intents <span class="accent">/ Shortcuts 快捷指令</span></h2>
+        <div class="sub">"双击背面截图发到 Jovida"的核心技术。</div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">i.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/appintents" target="_blank">App Intents · Apple Developer</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge ref">Framework</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/appintents" target="_blank">developer.apple.com/documentation/appintents</a></div>
+        <div class="quote-block">
+          <div class="qen">The App Intents framework provides functionality to deeply integrate your app's actions and content with system experiences across platforms, including <b>Siri, Spotlight, widgets, controls and toolbars</b>, and more. You expose your app's most important actions to the system as app intents.</div>
+          <div class="qcn">App Intents 框架让你 app 的动作和内容能与系统体验（<b>Siri、Spotlight、widget、控件与工具栏</b>等）深度集成。你把 app 中最重要的动作以 app intent 的形式暴露给系统。</div>
+          <div class="qint">"双击背面 → 截图 → 发到 Jovida"路径中，<b>"发到 Jovida"必须实现成一个 AppIntent</b>。否则用户在快捷指令里搜不到 Jovida。这条是工程交付物的硬要求。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">ii.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/appintents/app-shortcuts" target="_blank">App Shortcuts</a></div>
+          <div class="badges"><span class="badge should">Should-read</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/appintents/app-shortcuts" target="_blank">developer.apple.com/documentation/appintents/app-shortcuts</a></div>
+        <div class="quote-block">
+          <div class="qen">App Shortcuts make your app's intents available to the system, so the user doesn't need to set them up in the Shortcuts app. The system surfaces App Shortcuts in <b>Siri, Spotlight, and the Shortcuts app automatically</b>.</div>
+          <div class="qcn">App Shortcuts 让你 app 的 intent 自动可用于系统，无需用户在快捷指令 app 里手动配置。系统会自动在 <b>Siri、Spotlight、快捷指令 app</b> 中暴露 App Shortcuts。</div>
+          <div class="qint">两种路线：① 让用户自己在快捷指令 app 里搭"双击背面 → 截图 → Jovida 接收"——上手成本高；② 我们提前用 AppShortcuts 注册好"接收截图"动作，用户只需绑定一次。<b>v0.17 设计稿走的是路线①</b>，但日后做 onboarding 引导可以考虑提供一个"一键安装"的预制 shortcut。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">iii.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/design/human-interface-guidelines/shortcuts" target="_blank">HIG · Shortcuts</a></div>
+          <div class="badges"><span class="badge ref">Reference</span><span class="badge hig">HIG</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/design/human-interface-guidelines/shortcuts" target="_blank">developer.apple.com/design/human-interface-guidelines/shortcuts</a></div>
+        <div class="quote-block">
+          <div class="qint">短篇。重点是"intent 的命名要像动词短语"——比如不要叫"Jovida 处理"，要叫 <code>Send to Jovida Inbox</code>。<b>命名直接影响用户在快捷指令里能不能搜到、是否记得起来</b>。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- G. Back Tap -->
+  <section class="topic" id="back-tap">
+    <div class="topic-head">
+      <div class="index">G</div>
+      <div class="title-block">
+        <div class="label">Chapter G · 系统能力</div>
+        <h2>Back Tap <span class="accent">双击背面</span></h2>
+        <div class="sub">没有开发者 API。Jovida 通过 Shortcut 间接接入。</div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">i.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://support.apple.com/guide/iphone/use-back-tap-iph01ad9bd9c/ios" target="_blank">Use Back Tap on iPhone (User Guide)</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge ref">User Doc</span></div>
+        </div>
+        <div class="url"><a href="https://support.apple.com/guide/iphone/use-back-tap-iph01ad9bd9c/ios" target="_blank">support.apple.com/guide/iphone/use-back-tap-iph01ad9bd9c/ios</a></div>
+        <div class="quote-block">
+          <div class="qen">With Back Tap, you can <b>double-tap or triple-tap the back of iPhone</b> to perform actions like opening Control Center, taking a screenshot, or running a Shortcut. Go to Settings → Accessibility → Touch → Back Tap.</div>
+          <div class="qcn">通过"轻点背面"，你可以<b>双击或三击 iPhone 背面</b>来执行打开控制中心、截图、运行快捷指令等操作。进入"设置 → 辅助功能 → 触控 → 轻点背面"。</div>
+          <div class="qint">⚠️ <b>关键认知</b>：Back Tap 是 iOS 系统辅助功能，<b>没有开发者 API</b>，Jovida 不可能在 onboarding 里"一键开启"。我们能做的极限是：(1) 文字 + 截图引导用户去设置开启；(2) 提供 .shortcut 文件让用户绑定。设计 onboarding 时把这条想清楚——任何"一键设置"按钮其实都做不到。</div>
+        </div>
+        <div class="focus">补充阅读</div>
+        <ul class="reading-list">
+          <li><span class="step">+</span><a href="https://support.apple.com/guide/shortcuts/intro-to-shortcuts-apdf22b0444c/ios" target="_blank">Intro to Shortcuts on iPhone</a> — 让用户能听懂"打开快捷指令 app"是什么</li>
+          <li><span class="step">+</span><a href="https://support.apple.com/guide/shortcuts/share-shortcuts-apd0e9fbcf3a/ios" target="_blank">Share Shortcuts</a> — 我们如何分发预制 .shortcut 给用户</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- H. Pasteboard -->
+  <section class="topic" id="pasteboard">
+    <div class="topic-head">
+      <div class="index">H</div>
+      <div class="title-block">
+        <div class="label">Chapter H · 主题③-B 合规底线</div>
+        <h2>UIPasteboard <span class="accent">剪贴板与隐私</span></h2>
+        <div class="sub">iOS 14+ 后访问剪贴板会强提示，必须想清楚交互。</div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">i.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/uikit/uipasteboard" target="_blank">UIPasteboard · UIKit</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge ref">Framework</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/uikit/uipasteboard" target="_blank">developer.apple.com/documentation/uikit/uipasteboard</a></div>
+        <div class="quote-block">
+          <div class="qen"><b>In iOS 14 and later</b>, the system displays a banner indicating that an app accessed the pasteboard, unless the user grants the app explicit permission to access the pasteboard items.</div>
+          <div class="qcn">在 <b>iOS 14 及以后版本</b>，每次 app 访问剪贴板时，系统都会显示一个 banner 提示"xxx 已粘贴自 yyy"，除非用户明确授权该 app 访问剪贴板。</div>
+          <div class="qint">这就是为什么"用户从微信复制 → Jovida 自动捕获"做不到"零感知"——Jovida 每次读剪贴板都会闪 banner。这是 v0.17 设计稿假设"剪贴板悬浮陪伴"路径中<b>最大的体验代价</b>。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">ii.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/uikit/uipastecontrol" target="_blank">UIPasteControl</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge ref">隐私友好替代</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/uikit/uipastecontrol" target="_blank">developer.apple.com/documentation/uikit/uipastecontrol</a></div>
+        <div class="quote-block">
+          <div class="qen">A control that grants permission to paste from the pasteboard, <b>without alerting the user</b>. When the user taps the paste control, the system pastes the contents of the pasteboard into the current input area without prompting.</div>
+          <div class="qcn">一个<b>无需弹隐私提示</b>、即可获得粘贴权限的控件。当用户点击 paste 控件时，系统会把剪贴板内容粘贴到当前输入区域，且不弹出提示。</div>
+          <div class="qint">这是 Apple 给的<b>合规剪贴板捷径</b>。在 Jovida 里加一个"粘贴并保存到 Inbox"按钮——用户主动点 → 不弹 banner → 体验顺畅且合规。<b>建议把"剪贴板悬浮陪伴"的主路径改成 UIPasteControl 派生方案，PiP 仅作为补充</b>。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">iii.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/uikit/uipasteboard/detectpatterns(for:)" target="_blank">UIPasteboard.detectPatterns(for:)</a></div>
+          <div class="badges"><span class="badge should">Should-read</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/uikit/uipasteboard/detectpatterns(for:)" target="_blank">developer.apple.com/documentation/uikit/uipasteboard/detectpatterns(for:)</a></div>
+        <div class="quote-block">
+          <div class="qen">Detects patterns in the first item on the pasteboard. This method <b>detects patterns without exposing the actual content</b> to your app, so the system doesn't show a banner.</div>
+          <div class="qcn">检测剪贴板第一项中的特定 pattern。该方法仅做模式识别，<b>不会把剪贴板真实内容暴露</b>给你的 app，所以系统不会显示 banner。</div>
+          <div class="qint">妙处：可以问"剪贴板里是不是 URL/数字/可能的食物名"<b>而不真正读取内容</b>，无 banner。Jovida 可用此判断"用户复制了像菜谱链接的东西"，再以一个不打扰的卡片提示"要不要保存到 Inbox?"——<b>比 PiP 路径优雅得多</b>。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- I. PiP -->
+  <section class="topic" id="pip">
+    <div class="topic-head">
+      <div class="index">I</div>
+      <div class="title-block">
+        <div class="label">Chapter I · 灰色路径风险</div>
+        <h2>Picture-in-Picture <span class="accent">Para 套路</span></h2>
+        <div class="sub">v0.17 借鉴 Para 翻译的"PiP 悬浮窗 + 常驻读剪贴板"——审核灰色地带，必须了解原理与风险。</div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">i.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/avkit/avpictureinpicturecontroller" target="_blank">AVPictureInPictureController</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge ref">Framework</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/avkit/avpictureinpicturecontroller" target="_blank">developer.apple.com/documentation/avkit/avpictureinpicturecontroller</a></div>
+        <div class="quote-block">
+          <div class="qen">An object that responds to user-initiated playback of <b>video</b> in a floating, resizable window.</div>
+          <div class="qcn">一个对象，用于响应用户启动的<b>视频</b>在浮动、可调整大小的窗口中播放。</div>
+          <div class="qint">关键词是 <b>"video"</b>。AVKit 的设计意图是视频播放，Para 用 1×1 的透明视频流来"占位"，让 app 可以在后台运行——这是<b>违背 API 设计意图</b>的灰色用法。Apple 至今没明确禁止，但理论上随时可能在审核或下个版本中关掉。<b>Jovida 不应该把核心商业模式压在这条路径上</b>。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">ii.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/app-store/review/guidelines/" target="_blank">App Store Review Guidelines</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge hig">审核条款</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/app-store/review/guidelines/" target="_blank">developer.apple.com/app-store/review/guidelines</a></div>
+        <div class="focus">必读章节</div>
+        <ul class="reading-list">
+          <li><span class="step">01</span><b>2.5.1 Software Requirements</b>——只能用公开 API、不可绕过预期机制</li>
+          <li><span class="step">02</span><b>4.0 Design</b>——不能误导/欺骗系统行为</li>
+          <li><span class="step">03</span><b>5.1 Privacy</b>——剪贴板属于敏感信息</li>
+        </ul>
+        <div class="quote-block">
+          <div class="qen">Apps should use APIs and frameworks <b>for their intended purposes</b> and indicate that integration in their app description.</div>
+          <div class="qcn">App 应当按 API 和框架的<b>预期用途</b>使用，并在 app 描述中说明这种集成。</div>
+          <div class="qint">这一条就是审核员拒掉"PiP 滥用"时引用的依据。Jovida 上线时如要走 PiP 路径，<b>必须做好被拒的预案</b>：要么 app 内有真正的视频内容把 PiP 用得名正言顺（如"陪伴视频"），要么把 PiP 作为可选 power-user 路径而非主路径。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- J. Notifications -->
+  <section class="topic" id="notifications">
+    <div class="topic-head">
+      <div class="index">J</div>
+      <div class="title-block">
+        <div class="label">Chapter J · 主题③-A 反馈</div>
+        <h2>UNNotificationAction <span class="accent">可操作通知</span></h2>
+        <div class="sub">"截图被存入 Inbox"的反馈通知。</div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">i.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/usernotifications/declaring-your-actionable-notification-types" target="_blank">Declaring Your Actionable Notification Types</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge ref">Implementation</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/usernotifications/declaring-your-actionable-notification-types" target="_blank">developer.apple.com/documentation/usernotifications/declaring-your-actionable-notification-types</a></div>
+        <div class="quote-block">
+          <div class="qen">Define custom actions for your notifications by configuring categories. Each category includes one or more actions that the user can perform on the notification — for example, to <b>reply to a message</b> or <b>mark a task as complete</b>.</div>
+          <div class="qcn">通过配置 category 来为你的通知定义自定义动作。每个 category 包含用户能在该通知上执行的一个或多个动作——例如<b>回复消息</b>或<b>标记任务完成</b>。</div>
+          <div class="qint">这是 v0.17 设计稿"截图存好了，可以选'立即处理 / 稍后再说'"两个按钮的实现路径。<b>注意：iOS 默认显示 Short Look（无按钮），用户长按或下拉才显示 Long Look（带按钮）</b>。设计稿中的"操作通知"只在 Long Look 状态可见——onboarding 里要教用户"长按通知可以快速操作"。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">ii.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/usernotifications/unnotificationaction" target="_blank">UNNotificationAction</a></div>
+          <div class="badges"><span class="badge ref">Type Doc</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/usernotifications/unnotificationaction" target="_blank">developer.apple.com/documentation/usernotifications/unnotificationaction</a></div>
+        <div class="quote-block">
+          <div class="qint">技术参考。要点：每个 action 可以指定 <code>foreground</code>（点了打开 app）或 <code>destructive</code>（红色文案）。Jovida"立即处理"用 foreground，"稍后再说"用普通态——这俩按钮的视觉差异是<b>系统赋予的</b>，设计稿里不要试图自定义颜色。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">iii.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/design/human-interface-guidelines/notifications" target="_blank">HIG · Notifications</a></div>
+          <div class="badges"><span class="badge should">Should-read</span><span class="badge hig">HIG</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/design/human-interface-guidelines/notifications" target="_blank">developer.apple.com/design/human-interface-guidelines/notifications</a></div>
+        <div class="quote-block">
+          <div class="qint">读"Actions"和"Time-sensitive notifications"两节。Jovida"截图入 Inbox"既不是时间敏感、也不是关键事件，应该用<b>普通优先级</b>，不要用 time-sensitive（那是给真正紧急的提醒，如 health alert）。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- K. Privacy -->
+  <section class="topic" id="privacy">
+    <div class="topic-head">
+      <div class="index">K</div>
+      <div class="title-block">
+        <div class="label">Chapter K · 上线兜底</div>
+        <h2>App Privacy <span class="accent">/ 隐私清单</span></h2>
+        <div class="sub">上线前必读。剪贴板 + 截图 + push token 都进隐私清单。</div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">i.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/app-store/app-privacy-details/" target="_blank">App Privacy Details on the App Store</a></div>
+          <div class="badges"><span class="badge must">Must-read</span><span class="badge hig">合规</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/app-store/app-privacy-details/" target="_blank">developer.apple.com/app-store/app-privacy-details</a></div>
+        <div class="quote-block">
+          <div class="qint">Jovida v0.17 涉及到的隐私维度：(1) <b>用户内容</b>——剪贴板/截图都算 (2) <b>诊断</b>——push 失败/LA 启动失败的日志 (3) <b>使用情况</b>——LA 触达数据。设计 onboarding 文案时要主动透明告知"我们收什么、不收什么"，比 App Store privacy label 更软性更友好。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc">
+      <div class="marg">ii.</div>
+      <div class="body">
+        <div class="doc-head">
+          <div class="doc-title"><a href="https://developer.apple.com/documentation/bundleresources/privacy_manifest_files" target="_blank">Privacy Manifest Files</a></div>
+          <div class="badges"><span class="badge should">Should-read</span><span class="badge ref">2024+ 强制</span></div>
+        </div>
+        <div class="url"><a href="https://developer.apple.com/documentation/bundleresources/privacy_manifest_files" target="_blank">developer.apple.com/documentation/bundleresources/privacy_manifest_files</a></div>
+        <div class="quote-block">
+          <div class="qint">2024 年起所有新 app 必须随包提交 <code>PrivacyInfo.xcprivacy</code>。Jovida 用到 <code>NSPrivacyAccessedAPIType</code> 中的 UserDefaults / FileTimestamp / SystemBootTime 都得申报，<b>访问 UIPasteboard 也需要列出"required reason API"理由</b>。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLOPHON -->
+  <div class="colophon">
+    <h4>读完这 12 篇，你便<span class="accent">"能下场"</span>了。</h4>
+    <div class="week">
+      <div class="w">Week I</div>
+      <div class="what"><b>PM · 设计 · 工程同看</b> ·　Chapter A 全部（含两个 WWDC 视频）<span style="color:var(--ink-mute)"> → </span> Chapter E（HIG · LA）<span style="color:var(--ink-mute)"> → </span> Chapter C 第一篇</div>
+    </div>
+    <div class="week">
+      <div class="w">Week II</div>
+      <div class="what"><b>设计 + 工程深入</b> ·　Chapter B 全部 <span style="color:var(--ink-mute)"> → </span> Chapter D 全部 <span style="color:var(--ink-mute)"> → </span> Chapter C 第二篇</div>
+    </div>
+    <div class="week">
+      <div class="w">Week III</div>
+      <div class="what"><b>工程实施前</b> ·　Chapter F 全部 <span style="color:var(--ink-mute)"> → </span> Chapter G <span style="color:var(--ink-mute)"> → </span> Chapter H 全部 <span style="color:var(--ink-mute)"> → </span> Chapter J 全部</div>
+    </div>
+    <div class="week">
+      <div class="w">Pre-launch</div>
+      <div class="what"><b>上线前</b> ·　Chapter I 全部 <span style="color:var(--ink-mute)"> → </span> Chapter K 全部</div>
+    </div>
+    <p class="closer">读完之后再回头看 v0.17 原型稿，会发现自己能一眼指出每个细节的"为什么这么做""哪些是合规底线""哪些是工程红线"。这就是设计稿真正能下场的状态。</p>
+  </div>
+
+  <footer class="colophon-foot">
+    <div>Jovida v0.17 · Reading List · Vol. 01 · Compiled 2026 · 05 · 09</div>
+    <div class="right"><a href="./index.html">v0.17 Prototype</a> &middot; <a href="../../jovida_prd/v0.17/live_activity_constraints.md">LA Constraints</a></div>
+  </footer>
+
+</div>
+</body>
+</html>
