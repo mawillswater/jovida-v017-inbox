@@ -1,0 +1,1348 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jovida v0.17 · 2026-05-09 · Live Activity + 资源导入 + 暂存夹</title>
+<style>
+  :root{
+    --bg:#08090c;
+    --bg-2:#0d0f15;
+    --bg-3:#13151c;
+    --line:#1f232c;
+    --line-2:#2a2f3a;
+    --text:#e8eaf0;
+    --mute:#9aa1ae;
+    --dim:#6b7280;
+    --green:#9aff5b;
+    --green-soft:rgba(154,255,91,.16);
+    --orange:#ffc88c;
+    --orange-soft:rgba(255,200,140,.14);
+    --blue:#6ec8ff;
+    --blue-soft:rgba(110,200,255,.16);
+    --red:#ff8a8a;
+    --red-soft:rgba(255,138,138,.14);
+    --yellow:#ffd166;
+    --pink:#ff95cf;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","SF Pro Text","Helvetica Neue",sans-serif;
+    font-size:14px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background:
+      radial-gradient(circle at 18% 10%, rgba(154,255,91,.04) 0%, transparent 30%),
+      radial-gradient(circle at 82% 80%, rgba(110,200,255,.04) 0%, transparent 30%);
+    pointer-events:none;z-index:0;
+  }
+
+  .wrap{max-width:1380px;margin:0 auto;padding:36px 32px 72px;position:relative;z-index:1}
+
+  /* HERO */
+  header.hero{padding:24px 0 32px;border-bottom:1px solid var(--line);margin-bottom:36px}
+  .crumbs{font-size:11px;color:var(--mute);letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px;font-family:"SF Mono","JetBrains Mono",Menlo,monospace}
+  .crumbs b{color:var(--green);letter-spacing:.18em}
+  .hero h1{font-size:34px;font-weight:800;letter-spacing:-.012em;line-height:1.15;margin-bottom:10px}
+  .hero h1 b{color:var(--green)}
+  .hero .lede{font-size:14.5px;color:var(--mute);max-width:78ch;line-height:1.65}
+  .hero .lede b{color:var(--text)}
+  .hero .pills{margin-top:16px;display:flex;flex-wrap:wrap;gap:6px}
+  .hero .pill{font-size:11.5px;padding:4px 10px;border:1px solid var(--line-2);border-radius:99px;color:var(--text);font-weight:600}
+  .hero .pill.green{background:var(--green-soft);color:var(--green);border-color:rgba(154,255,91,.32)}
+  .hero .pill.blue{background:var(--blue-soft);color:var(--blue);border-color:rgba(110,200,255,.3)}
+  .hero .pill.orange{background:var(--orange-soft);color:var(--orange);border-color:rgba(255,200,140,.32)}
+
+  /* SECTION */
+  section{margin:64px 0;scroll-margin-top:24px}
+  .sec-title{display:flex;align-items:baseline;gap:18px;margin-bottom:12px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  .sec-num{font-size:11px;color:var(--mute);letter-spacing:.22em;text-transform:uppercase;font-family:"SF Mono","JetBrains Mono",Menlo,monospace}
+  .sec-title h2{font-size:24px;font-weight:800;letter-spacing:-.005em}
+  .sec-title h2 b{color:var(--green)}
+  .sec-desc{color:var(--mute);font-size:14.5px;max-width:90ch;margin-bottom:20px;line-height:1.65}
+  .sec-desc b{color:var(--text)}
+
+  h3.sub{font-size:16.5px;font-weight:800;letter-spacing:-.005em;margin:26px 0 8px;color:var(--text);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .tag{font-size:10.5px;padding:2px 8px;border-radius:6px;background:var(--bg-3);color:var(--mute);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+  p.sub-desc{color:var(--mute);font-size:13.5px;max-width:90ch;margin-bottom:16px;line-height:1.6}
+  p.sub-desc b{color:var(--text)}
+
+  /* INFO BOXES */
+  .info-box{background:rgba(154,255,91,.04);border:1px solid rgba(154,255,91,.22);border-radius:12px;padding:14px 18px;margin:14px 0}
+  .info-box.warn{background:rgba(255,200,140,.045);border-color:rgba(255,200,140,.28)}
+  .info-box.alert{background:rgba(255,138,138,.045);border-color:rgba(255,138,138,.28)}
+  .info-box.blue{background:rgba(110,200,255,.045);border-color:rgba(110,200,255,.26)}
+  .info-box .head{font-weight:800;color:var(--green);font-size:13.5px;margin-bottom:8px;letter-spacing:-.005em}
+  .info-box.warn .head{color:var(--orange)}
+  .info-box.alert .head{color:var(--red)}
+  .info-box.blue .head{color:var(--blue)}
+  .info-box ul{padding-left:20px}
+  .info-box li{margin:5px 0;font-size:13.5px;line-height:1.6;color:#cdd2da}
+  .info-box li b{color:var(--text)}
+
+  /* DEFINITION BOX */
+  .def-box{background:linear-gradient(135deg,rgba(154,255,91,.06),rgba(154,255,91,.02));border:1px solid rgba(154,255,91,.28);border-radius:12px;padding:16px 20px;margin:14px 0}
+  .def-box .head{font-size:11.5px;color:var(--green);letter-spacing:.18em;text-transform:uppercase;font-weight:700;margin-bottom:6px;font-family:"SF Mono",monospace}
+  .def-box .core{font-size:15.5px;font-weight:700;color:var(--text);margin-bottom:8px}
+  .def-box .meta{font-size:13px;color:var(--mute);margin-bottom:8px}
+  .def-box ol,.def-box ul{padding-left:20px}
+  .def-box li{margin:5px 0;font-size:13.5px;line-height:1.6;color:#cdd2da}
+  .def-box li b{color:var(--text)}
+
+  /* TABLE-ish layouts */
+  .field-table{display:grid;grid-template-columns:200px 1fr;gap:0;background:var(--bg-2);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:14px 0}
+  .field-table .row{display:contents}
+  .field-table .row > div{padding:11px 16px;border-bottom:1px solid var(--line);font-size:13.5px}
+  .field-table .row:last-child > div{border-bottom:none}
+  .field-table .k{color:var(--green);font-weight:700;background:rgba(154,255,91,.05);font-family:"SF Mono",monospace;font-size:12.5px}
+  .field-table .v{color:#cdd2da}
+
+  /* PHONE MOCKUPS — Common */
+  .phone-row{display:flex;gap:18px;margin:18px 0;flex-wrap:wrap}
+  .phone-row.cols-3 .step{flex:1 1 calc(33.33% - 12px);min-width:280px}
+  .phone-row.cols-4 .step{flex:1 1 calc(25% - 14px);min-width:240px}
+  .phone-row.cols-2 .step{flex:1 1 calc(50% - 9px);min-width:300px}
+
+  .step{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:14px 14px 16px;display:flex;flex-direction:column}
+  .step-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .step-num{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:22px;padding:0 8px;background:var(--green-soft);color:var(--green);border-radius:6px;font-size:10.5px;font-weight:800;letter-spacing:.04em}
+  .step-num.b{background:var(--blue-soft);color:var(--blue)}
+  .step-num.o{background:var(--orange-soft);color:var(--orange)}
+  .step-num.r{background:var(--red-soft);color:var(--red)}
+  .step-name{font-weight:800;font-size:14px;color:var(--text);letter-spacing:-.005em}
+  .step-desc{color:var(--mute);font-size:12.5px;line-height:1.55;margin-bottom:12px}
+  .step-desc b{color:var(--text)}
+
+  .frame-area{display:flex;justify-content:center;padding:6px 0 4px;flex:1}
+
+  /* iPhone — Lock Screen frame */
+  .phone{width:268px;height:580px;background:#000;border-radius:42px;padding:7px;position:relative;box-shadow:0 8px 28px rgba(0,0,0,.5);flex-shrink:0}
+  .phone::before{content:"";position:absolute;top:16px;left:50%;transform:translateX(-50%);width:88px;height:26px;background:#000;border-radius:99px;z-index:5}
+  .phone.has-island::before{display:none}
+  .phone .screen{width:100%;height:100%;border-radius:35px;overflow:hidden;position:relative;background:#0a0a0d}
+
+  /* Dynamic Island */
+  .island{position:absolute;top:9px;left:50%;transform:translateX(-50%);background:#000;color:#fff;z-index:10;display:flex;align-items:center;overflow:hidden}
+  .island.compact{width:122px;height:34px;border-radius:99px;padding:4px 7px;justify-content:space-between}
+  .island.minimal{width:34px;height:30px;border-radius:99px}
+  .island.expanded-big{width:236px;border-radius:30px;padding:11px 13px;flex-direction:column;align-items:stretch;gap:6px}
+
+  .island.compact .ip-mini{width:26px;height:26px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#9aff5b}
+  .island.compact .ip-mini img{width:100%;height:100%;object-fit:cover}
+  .island.compact .right{font-size:14px;font-weight:700;color:#fff;letter-spacing:.02em;padding-right:6px}
+
+  .island.minimal{display:flex;align-items:center;justify-content:center}
+  .island.minimal .dot{width:20px;height:20px;border-radius:50%;background:#9aff5b;overflow:hidden}
+  .island.minimal .dot img{width:100%;height:100%;object-fit:cover}
+
+  .island.expanded-big .ex-top{display:flex;align-items:center;gap:10px}
+  .island.expanded-big .ex-ip{width:34px;height:34px;border-radius:50%;overflow:hidden;background:#9aff5b;flex-shrink:0}
+  .island.expanded-big .ex-ip img{width:100%;height:100%;object-fit:cover}
+  .island.expanded-big .ex-emoji{width:34px;height:34px;border-radius:9px;background:#1c1c1e;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-left:auto}
+  .island.expanded-big .ex-text{flex:1;min-width:0}
+  .island.expanded-big .ex-text .t1{font-size:11px;font-weight:700;color:#fff;line-height:1.2;letter-spacing:-.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .island.expanded-big .ex-text .t2{font-size:9px;color:#9aa1ae;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+
+  /* Lock screen background */
+  .lock-bg{position:absolute;inset:0;background:linear-gradient(135deg,#1a1f2e 0%,#0a0d18 70%,#000 100%);overflow:hidden}
+  .lock-bg::before{content:"";position:absolute;top:-30%;right:-20%;width:80%;height:80%;background:radial-gradient(circle,rgba(110,200,255,.18),transparent 60%)}
+  .lock-bg::after{content:"";position:absolute;bottom:-30%;left:-20%;width:90%;height:90%;background:radial-gradient(circle,rgba(154,255,91,.08),transparent 60%)}
+
+  .lock-date{position:absolute;top:22px;left:0;right:0;text-align:center;color:#fff;font-size:12.5px;font-weight:700;letter-spacing:.04em;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+  .lock-time{position:absolute;top:42px;left:0;right:0;text-align:center;color:#fff;font-size:62px;font-weight:200;letter-spacing:-.04em;line-height:1;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+
+  /* LA card on lock screen */
+  .la-card{position:absolute;left:12px;right:12px;top:140px;background:rgba(255,255,255,.13);backdrop-filter:blur(20px);border-radius:16px;padding:11px 13px;display:flex;align-items:center;gap:11px;border:1px solid rgba(255,255,255,.08)}
+  .la-card .la-ip{width:38px;height:38px;border-radius:50%;overflow:hidden;background:#9aff5b;flex-shrink:0}
+  .la-card .la-ip img{width:100%;height:100%;object-fit:cover}
+  .la-card .la-text{flex:1;min-width:0}
+  .la-card .la-t1{font-size:12px;font-weight:700;color:#fff;line-height:1.25;letter-spacing:-.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .la-card .la-t2{font-size:10px;color:rgba(255,255,255,.78);margin-top:2px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .la-card .la-emoji{width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+
+  .lock-other-noti{position:absolute;left:12px;right:12px;top:228px;background:rgba(255,255,255,.1);backdrop-filter:blur(20px);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:9px}
+  .lock-other-noti .icon{width:24px;height:24px;border-radius:6px;background:#7be39e;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff}
+  .lock-other-noti .text-l{flex:1;min-width:0;color:#fff}
+  .lock-other-noti .ll1{font-size:11px;font-weight:700;line-height:1.2}
+  .lock-other-noti .ll2{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;line-height:1.3}
+
+  .lock-bottom{position:absolute;bottom:18px;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:0 28px}
+  .lock-bottom .l-icon{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(255,255,255,.85)}
+  .home-bar{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:96px;height:4px;background:rgba(255,255,255,.45);border-radius:99px}
+
+  /* App Screen content (used in DI demos) */
+  .app-screen{position:absolute;inset:0;background:#fff}
+  .app-screen .statusbar{display:flex;justify-content:space-between;padding:14px 18px 6px;color:#000;font-size:11.5px;font-weight:700}
+  .app-screen .icons{font-size:9px;letter-spacing:1px}
+
+  /* Home screen mock - simplified */
+  .home-mock{position:absolute;inset:0;background:linear-gradient(180deg,#cbe7f5 0%,#f2f5f8 22%,#f6f7f8 100%)}
+  .home-mock .hm-status{display:flex;justify-content:space-between;padding:12px 16px 0;font-size:11.5px;font-weight:700;color:#000}
+  .home-mock .hm-tabs{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;gap:5px}
+  .home-mock .hm-tab{padding:4px 10px;background:#fff;border-radius:99px;font-size:10px;font-weight:700;color:#1a1a1a;box-shadow:0 1px 2px rgba(0,0,0,.06);white-space:nowrap;flex-shrink:0}
+  .home-mock .hm-tab.dim{background:rgba(0,0,0,.05);color:#5a6068}
+  .home-mock .hm-coffee{font-size:10px;font-weight:700;color:#5a6068;background:rgba(0,0,0,.04);padding:4px 7px;border-radius:99px;display:flex;align-items:center;gap:3px;white-space:nowrap;flex-shrink:0}
+  .home-mock .hm-burger{font-size:14px;color:#1a1a1a;font-weight:700;padding:0 3px;flex-shrink:0}
+  .home-mock .hm-greet{margin:6px 12px 10px;background:linear-gradient(180deg,#cae5f1,#dfeef5);padding:10px 12px;border-radius:14px;display:flex;align-items:center;gap:9px;color:#1a2837;font-size:10.5px;line-height:1.4}
+  .home-mock .hm-greet .bn{width:48px;height:48px;flex-shrink:0;background:#9aff5b;border-radius:50%;overflow:hidden}
+  .home-mock .hm-greet .bn img{width:100%;height:100%;object-fit:cover}
+  .home-mock .hm-greet .gtxt{flex:1;font-weight:600}
+  .home-mock .hm-section{margin:8px 12px}
+  .home-mock .hm-section .ttl{font-size:9.5px;font-weight:800;color:#5a6068;letter-spacing:.04em;margin:6px 4px 4px}
+  .home-mock .hm-card{background:#fff;border-radius:14px;padding:7px 10px;margin-bottom:5px;display:flex;align-items:center;gap:8px;box-shadow:0 1px 2px rgba(0,0,0,.04);font-size:10px;color:#1a1a1a}
+  .home-mock .hm-card .ic{width:30px;height:30px;border-radius:8px;background:#e5e9ef;flex-shrink:0;background-size:cover;background-position:center}
+  .home-mock .hm-card .info{flex:1;min-width:0}
+  .home-mock .hm-card .h{font-size:10.5px;font-weight:700;color:#1a1a1a;line-height:1.2}
+  .home-mock .hm-card .d{font-size:9px;color:#7b8290;line-height:1.3;margin-top:1px}
+  .home-mock .hm-card .arr{color:#9ea4ad;font-size:11px}
+  .home-mock .hm-bottom{position:absolute;bottom:14px;left:0;right:0;display:flex;justify-content:space-between;padding:0 20px;gap:8px}
+  .home-mock .hm-btm-btn{flex:1;background:#fff;border-radius:99px;padding:9px 14px;font-size:11.5px;font-weight:700;color:#1a1a1a;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:center;gap:6px}
+  .home-mock .hm-btm-btn.add{background:#1a1a1a;color:#fff}
+
+  /* Highlight ring (for callout) */
+  .hi{box-shadow:0 0 0 2.5px var(--green),0 0 0 5px rgba(154,255,91,.25);border-radius:99px;animation:pulseRing 1.6s ease-out infinite}
+  @keyframes pulseRing{0%{box-shadow:0 0 0 2.5px var(--green),0 0 0 5px rgba(154,255,91,.35)}50%{box-shadow:0 0 0 2.5px var(--green),0 0 0 12px rgba(154,255,91,.0)}100%{box-shadow:0 0 0 2.5px var(--green),0 0 0 5px rgba(154,255,91,.0)}}
+
+  .cap{font-size:11px;color:var(--mute);text-align:center;margin-top:8px;line-height:1.4}
+  .cap .gp{display:inline-block;padding:1px 6px;background:rgba(154,255,91,.13);color:var(--green);border-radius:5px;font-size:10px;font-weight:800;letter-spacing:.06em;margin-right:5px}
+
+  /* Timeline */
+  .timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+  .tl-cell{background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:12px 12px}
+  .tl-cell .tl-time{font-size:10.5px;color:var(--green);font-weight:800;letter-spacing:.06em;font-family:"SF Mono",monospace;margin-bottom:6px}
+  .tl-cell.empty .tl-time{color:var(--dim)}
+  .tl-cell .tl-title{font-size:13px;font-weight:800;color:var(--text);line-height:1.3}
+  .tl-cell .tl-sub{font-size:11.5px;color:var(--mute);margin-top:4px;line-height:1.4}
+  .tl-cell.empty{opacity:.55}
+
+  /* Code blocks */
+  pre.code{font-family:"SF Mono","JetBrains Mono",Menlo,monospace;font-size:11.5px;color:#cdd2da;line-height:1.6;white-space:pre-wrap;background:rgba(0,0,0,.4);padding:14px 16px;border-radius:10px;border:1px solid var(--line);overflow-x:auto;margin:10px 0}
+  pre.code .kw{color:var(--green);font-weight:700}
+  pre.code .cm{color:var(--dim)}
+  pre.code .st{color:var(--orange)}
+
+  /* Sheet / Bottom Sheet mock */
+  .bsheet-screen{position:absolute;inset:0;background:rgba(0,0,0,.42);display:flex;align-items:flex-end;justify-content:center}
+  .bsheet{width:100%;background:#fff;border-radius:18px 18px 0 0;padding:14px 14px 22px}
+  .bsheet .grab{width:36px;height:4px;background:#d0d3d8;border-radius:99px;margin:0 auto 12px}
+  .bsheet .preview{background:#f0f3f8;border-radius:11px;padding:10px;display:flex;align-items:center;gap:9px;margin-bottom:12px}
+  .bsheet .preview .pic{width:46px;height:46px;border-radius:8px;background:#222 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23fff'><path d='M3 5h18v14H3z' opacity='.3'/><circle cx='8' cy='10' r='1.5'/><path d='M21 15l-5-5L9 17l-3-3-3 3v2h18z'/></svg>") center/56% no-repeat;flex-shrink:0}
+  .bsheet .preview .pinfo{font-size:10.5px;color:#1a1a1a;line-height:1.35}
+  .bsheet .preview .pinfo b{font-weight:800}
+  .bsheet .preview .pinfo .pdim{color:#7b8290;font-weight:500;margin-top:2px}
+  .bsheet .opt{padding:11px 13px;background:#f6f7f8;border-radius:12px;margin-bottom:7px;display:flex;align-items:center;gap:9px;font-size:11px;color:#1a1a1a}
+  .bsheet .opt .oicn{width:26px;height:26px;border-radius:7px;background:#e5e9ef;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+  .bsheet .opt.primary{background:#1a1a1a;color:#fff}
+  .bsheet .opt.primary .oicn{background:rgba(154,255,91,.25);color:#9aff5b}
+  .bsheet .opt .otitle{flex:1;font-weight:700;font-size:11.5px;line-height:1.3}
+  .bsheet .opt .osub{font-size:9.5px;color:#7b8290;font-weight:500;margin-top:1px}
+  .bsheet .opt.primary .osub{color:rgba(255,255,255,.65)}
+  .bsheet .opt .oarr{font-size:13px;color:#9ea4ad}
+  .bsheet .opt.primary .oarr{color:rgba(255,255,255,.55)}
+  .bsheet .cancel{padding:11px;text-align:center;font-size:11.5px;font-weight:700;color:#1a1a1a;background:#f0f3f8;border-radius:12px;margin-top:5px}
+
+  /* Settings list mock */
+  .stg-screen{position:absolute;inset:0;background:#f2f3f5}
+  .stg-screen .stg-status{display:flex;justify-content:space-between;padding:14px 18px 8px;font-size:11.5px;font-weight:700;color:#000}
+  .stg-screen .stg-back{padding:0 14px 14px;display:flex;align-items:center;gap:14px}
+  .stg-screen .stg-back .arr{width:30px;height:30px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:#1a1a1a;font-weight:600}
+  .stg-screen .stg-back .ttl{font-size:14px;font-weight:800;color:#1a1a1a;flex:1;text-align:center;margin-right:30px}
+  .stg-list{margin:6px 12px;background:#fff;border-radius:12px;overflow:hidden}
+  .stg-row{display:flex;align-items:center;gap:9px;padding:11px 12px;border-bottom:1px solid #f0f3f8;font-size:11.5px;color:#1a1a1a;font-weight:700}
+  .stg-row:last-child{border-bottom:none}
+  .stg-row .icn{width:24px;height:24px;border-radius:6px;background:#e5e9ef;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+  .stg-row .icn.green{background:#9aff5b;color:#0a3a0e}
+  .stg-row .icn.orange{background:#ffc88c;color:#5a3a0e}
+  .stg-row .arr{margin-left:auto;color:#9ea4ad;font-size:12px}
+  .stg-section-ttl{font-size:9.5px;color:#7b8290;font-weight:700;letter-spacing:.06em;margin:14px 18px 4px;text-transform:uppercase}
+
+  /* Inbox detail screen */
+  .inbox-screen{position:absolute;inset:0;background:#0d0f15;color:#fff}
+  .inbox-screen .ib-status{display:flex;justify-content:space-between;padding:14px 18px 8px;font-size:11.5px;font-weight:700}
+  .inbox-screen .ib-head{padding:6px 14px 12px;display:flex;align-items:center;gap:10px}
+  .inbox-screen .ib-back{width:28px;height:28px;border-radius:50%;background:#1c2030;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff}
+  .inbox-screen .ib-title{font-size:14.5px;font-weight:800;flex:1}
+  .inbox-screen .ib-edit{font-size:11.5px;color:#9aff5b;font-weight:700}
+  .inbox-screen .ib-stats{padding:0 14px 8px;font-size:10.5px;color:#7b8290}
+  .ib-list{padding:0 12px;display:flex;flex-direction:column;gap:7px;overflow:hidden}
+  .ib-item{background:#13151c;border:1px solid #232830;border-radius:12px;padding:9px 11px;display:flex;gap:9px;align-items:flex-start;font-size:11px;line-height:1.4;position:relative}
+  .ib-item .ib-thumb{width:42px;height:42px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:800}
+  .ib-item .ib-thumb.image{background:linear-gradient(135deg,#86cbff,#5b9aff)}
+  .ib-item .ib-thumb.text{background:#2a2f3a;font-size:11px;color:#9aa1ae}
+  .ib-item .ib-thumb.link{background:linear-gradient(135deg,#1a3550,#1a1a1a);font-size:9.5px;color:#9aff5b}
+  .ib-item .ib-body{flex:1;min-width:0}
+  .ib-item .ib-h{font-weight:800;color:#fff;font-size:11.5px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ib-item .ib-d{font-size:9.5px;color:#9aa1ae;line-height:1.4;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .ib-item .ib-meta{font-size:9px;color:#7b8290;margin-top:3px;letter-spacing:.02em}
+  .ib-item .ib-chk{width:18px;height:18px;border-radius:50%;border:1.5px solid #2a2f3a;flex-shrink:0;align-self:center;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:800}
+  .ib-item.chk .ib-chk{background:#9aff5b;border-color:#9aff5b;color:#0a3a0e}
+  .ib-item.chk{border-color:rgba(154,255,91,.4);background:rgba(154,255,91,.06)}
+  .ib-bottom-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(13,15,21,.95);backdrop-filter:blur(12px);padding:10px 14px 18px;border-top:1px solid #232830;display:flex;align-items:center;gap:8px}
+  .ib-bottom-bar .ib-cnt{font-size:11px;color:#cdd2da;font-weight:700}
+  .ib-bottom-bar .ib-act{margin-left:auto;background:#9aff5b;color:#0a3a0e;padding:8px 16px;border-radius:99px;font-size:11.5px;font-weight:800}
+
+  /* Sidebar mock */
+  .sidebar-screen{position:absolute;inset:0;background:linear-gradient(180deg,#f4f5f7 0%,#eaecf0 100%)}
+  .sidebar-screen .sb-status{display:flex;justify-content:space-between;padding:14px 18px 6px;font-size:11.5px;font-weight:700;color:#000}
+  .sidebar-screen .sb-user{padding:0 14px 8px;display:flex;align-items:center;gap:8px;color:#1a1a1a}
+  .sidebar-screen .sb-user .nm{font-size:14px;font-weight:800}
+  .sidebar-screen .sb-user .id{font-size:9.5px;color:#7b8290}
+  .sidebar-screen .sb-user .stg-icn{margin-left:auto;width:26px;height:26px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;color:#1a1a1a;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .sidebar-screen .sb-credits{margin:6px 12px;padding:9px 11px;background:linear-gradient(135deg,#fff8d6,#fdebbe);border-radius:12px;display:flex;align-items:center;gap:7px}
+  .sidebar-screen .sb-credits .lab{font-size:9.5px;color:#7b6a3a;font-weight:700}
+  .sidebar-screen .sb-credits .num{font-size:13px;font-weight:800;color:#1a1a1a}
+  .sidebar-screen .sb-credits .car{margin-left:auto;font-size:18px}
+  .sidebar-screen .sb-mygoal{font-size:9.5px;color:#7b8290;font-weight:700;margin:8px 16px 4px;letter-spacing:.04em}
+  .sidebar-screen .sb-pills{display:flex;gap:7px;margin:0 12px 6px}
+  .sidebar-screen .sb-pill{flex:1;background:#fff;border-radius:99px;padding:6px 0;text-align:center;font-size:10px;font-weight:700;color:#1a1a1a;box-shadow:0 1px 2px rgba(0,0,0,.04);display:flex;align-items:center;justify-content:center;gap:4px}
+  .sidebar-screen .sb-pill .ic{font-size:11px}
+  .sidebar-screen .sb-row{margin:4px 12px;padding:9px 12px;background:#fff;border-radius:12px;display:flex;align-items:center;gap:8px;font-size:10.5px;color:#1a1a1a;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+  .sidebar-screen .sb-row .ic{width:30px;height:30px;border-radius:7px;background:#e5e9ef;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px}
+  .sidebar-screen .sb-row .label{flex:1;font-weight:700}
+  .sidebar-screen .sb-row .arr{color:#9ea4ad;font-size:11px}
+  .sidebar-screen .sb-inbox{margin:6px 12px;padding:10px 12px;background:linear-gradient(135deg,rgba(154,255,91,.18),rgba(154,255,91,.06));border:1px solid rgba(154,255,91,.45);border-radius:12px;display:flex;align-items:center;gap:9px;font-size:10.5px;color:#1a1a1a}
+  .sidebar-screen .sb-inbox .ic{width:30px;height:30px;border-radius:7px;background:#9aff5b;color:#0a3a0e;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+  .sidebar-screen .sb-inbox .label{flex:1;font-weight:800}
+  .sidebar-screen .sb-inbox .badge{font-size:10px;font-weight:800;color:#0a3a0e;background:#9aff5b;padding:2px 7px;border-radius:99px}
+
+  /* Backend lifecycle viz */
+  .lifecycle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:16px 0}
+  .lc{padding:14px 16px;border-radius:12px;border:1px solid var(--line);background:var(--bg-2)}
+  .lc .lc-head{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);font-weight:700;margin-bottom:8px}
+  .lc.create{background:rgba(154,255,91,.05);border-color:rgba(154,255,91,.3)}
+  .lc.create .lc-head{color:var(--green)}
+  .lc.update{background:rgba(110,200,255,.05);border-color:rgba(110,200,255,.3)}
+  .lc.update .lc-head{color:var(--blue)}
+  .lc.end{background:rgba(255,138,138,.05);border-color:rgba(255,138,138,.3)}
+  .lc.end .lc-head{color:var(--red)}
+  .lc h4{font-size:14.5px;font-weight:800;margin-bottom:8px}
+  .lc ul{padding-left:18px}
+  .lc li{font-size:12.5px;color:#cdd2da;line-height:1.5;margin:5px 0}
+  .lc li b{color:var(--text)}
+
+  /* TOC nav */
+  nav.toc{position:sticky;top:12px;background:rgba(8,9,12,.85);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:24px;z-index:50;display:flex;gap:14px;flex-wrap:wrap;font-size:12px;font-weight:700}
+  nav.toc a{color:var(--mute);text-decoration:none;border-bottom:1px solid transparent;padding-bottom:1px;transition:.2s}
+  nav.toc a:hover{color:var(--green);border-bottom-color:var(--green)}
+  nav.toc .lab{font-size:10.5px;color:var(--dim);letter-spacing:.18em;text-transform:uppercase;font-family:"SF Mono",monospace;margin-right:auto}
+
+  /* footer */
+  footer{margin-top:60px;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--mute);font-family:"SF Mono",monospace;letter-spacing:.04em;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+  footer a{color:var(--green);text-decoration:none;border-bottom:1px solid var(--green)}
+
+  @media (max-width:900px){
+    .wrap{padding:24px 16px 56px}
+    .timeline{grid-template-columns:repeat(2,1fr)}
+    .lifecycle{grid-template-columns:1fr}
+    .field-table{grid-template-columns:140px 1fr}
+    nav.toc{flex-direction:column;align-items:flex-start;gap:8px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="crumbs"><b>Jovida v0.17</b> · 产品需求与原型 · <span style="color:var(--text)">2026-05-09</span></div>
+    <h1>本期迭代 · <b>Live Activity Action Now</b> + 资源导入 + 暂存夹</h1>
+    <p class="lede">
+      本期 Wolves 这一 part 聚焦三件事：<b>① 用 Live Activity 推送当下最该做的 Action Now，4 个位置全做</b>；<b>② 快捷指令传图把外部资源送进 Jovida</b>；<b>③ 暂存夹做导入资源的归集与处理</b>。<br>
+      与 0508 版相比的关键变化：删除了"鼓励语 / 隐藏"两态，LA 只承载 Action Now（其他时刻 LA 直接消失）；快捷指令选项从 3 个收敛到 2 个；新增 minimal 态 mockup；首页 / 侧边栏 / 设置 入口位置依据最新 UI 修正。
+    </p>
+    <div class="pills">
+      <span class="pill green">Live Activity · 4 位置</span>
+      <span class="pill blue">快捷指令传图</span>
+      <span class="pill orange">暂存夹</span>
+      <span class="pill" style="background:#1c2030;color:#7b8290;border-color:#2a2f3a">PIP 监听剪贴板 · 本期暂略</span>
+    </div>
+  </header>
+
+  <!-- TOC -->
+  <nav class="toc">
+    <span class="lab">Sections</span>
+    <a href="#a">A · Live Activity</a>
+    <a href="#b">B · 快捷指令传图</a>
+    <a href="#c">C · PIP 监听剪贴板</a>
+    <a href="#d">D · 暂存夹</a>
+    <a href="#e">E · Agent / 后端</a>
+  </nav>
+
+  <!-- ============================================================ -->
+  <!-- SECTION A: Live Activity                                      -->
+  <!-- ============================================================ -->
+  <section id="a">
+    <div class="sec-title">
+      <div class="sec-num">SECTION A</div>
+      <h2>Live Activity · 推送 <b>当下最该做的 Action Now</b></h2>
+    </div>
+    <p class="sec-desc">
+      本期 Live Activity 的<b>唯一职责</b>是在锁屏 / 灵动岛上呈现"<b>用户当下最该做的事</b>"。
+      没有合适的 Action Now 时，LA <b>主动消失</b>——不做装饰性占位、不做心情语 / 鼓励语 / 元数据陈列。
+      "知道什么时候该消失"是陪伴感的关键素养。
+    </p>
+
+    <h3 class="sub">A1 · 设计原则与硬约束</h3>
+    <div class="info-box">
+      <div class="head">📘 必做的 4 个位置（Apple ActivityKit 规范要求）</div>
+      <ul>
+        <li><b>Lock Screen 卡片</b> · 用户解锁前抬眼看到的主战场</li>
+        <li><b>Dynamic Island · Compact</b>（默认胶囊态）· 任何 app 顶部一直可见</li>
+        <li><b>Dynamic Island · Minimal</b>（多 LA 共存时压缩态）· 极小圆点</li>
+        <li><b>Dynamic Island · Expanded</b>（启动 / Alert / 长按时展开）· 大卡片</li>
+        <li>API 上 <code style="background:#000;padding:1px 6px;border-radius:4px;color:var(--green);font-family:'SF Mono',monospace;font-size:12px">ActivityConfiguration</code> 的 <code style="background:#000;padding:1px 6px;border-radius:4px;color:var(--green);font-family:'SF Mono',monospace;font-size:12px">dynamicIsland</code> 闭包要求 4 态全交付，无法只挑其中几个</li>
+      </ul>
+    </div>
+    <div class="info-box warn">
+      <div class="head">⚠️ 资源体积硬上限 · 静态 + 动态各 < 4 KB</div>
+      <ul>
+        <li><b>ActivityAttributes（静态资源，启动时一次性传入）</b>：≤ 4 KB · 包含 Jovida 角色 ID、模板 token 等不变信息</li>
+        <li><b>ContentState（动态资源，每次 update 携带）</b>：≤ 4 KB · 包含 Action 标题 / 副标题 / emoji 标识</li>
+        <li><b>4 KB 装不下任何图片二进制</b>——所有 Jovida 角色图、Action 配图必须<b>预打包在 app bundle</b>，ContentState 只传"asset 名"字符串</li>
+        <li>所以 backend 推过来的字段必须是<b>引用</b>（character_pose=happy / action_emoji=skincare），不是 url</li>
+      </ul>
+    </div>
+    <div class="info-box alert">
+      <div class="head">⛔ MVP 严格不做</div>
+      <ul>
+        <li><b>不放任何按钮</b>（无论锁屏卡 / 灵动岛 expanded）· 整体 tap 跳 Action 详情页，简化心智</li>
+        <li><b>不做"鼓励语 / 心情语 / 装饰态" LA</b> · 没合适 Action 就让 LA 消失</li>
+        <li><b>不做 LA 内的填表 / 评论 / 复杂交互</b> · LA 只是入口</li>
+        <li><b>不做高频更新</b> · 心跳节奏由 Agent 决定（一般一天 2-4 次内容切换），中间静默</li>
+      </ul>
+    </div>
+
+    <h3 class="sub">A2 · 各位置展示字段（精确 spec）</h3>
+    <p class="sub-desc">下表是每个位置 LA 视图能且仅能拿到的字段。设计稿和工程都按这张表交付。</p>
+    <div class="field-table">
+      <div class="row"><div class="k">Lock Screen 卡片</div><div class="v">① Jovida Character 图（asset，~36×36pt 头像）<br>② Action emoji / 图（asset，~34×34pt 方框）<br>③ Action 标题（一行，最多 ~14 字）<br>④ Action 副标题（一行，最多 ~24 字）</div></div>
+      <div class="row"><div class="k">DI · Expanded</div><div class="v">同 Lock Screen（IP + emoji + 标题 + 副标题）<br>视觉布局压缩为更紧凑的胶囊形态，~208pt 宽，~80pt 高</div></div>
+      <div class="row"><div class="k">DI · Compact</div><div class="v"><b>Leading</b>：Jovida Character 图（圆形头像，~24×24pt）<br><b>Trailing</b>：Action emoji 或 1-2 字符状态（~13px 字 / ~24×24pt 图）<br>中间是摄像头胶囊区，<b>不能放任何内容</b></div></div>
+      <div class="row"><div class="k">DI · Minimal</div><div class="v">Jovida Character 图（单个圆形 dot，~18×18pt）<br>多 LA 共存时被压缩到此态，仅作"我还在"的提示，无任何文字</div></div>
+      <div class="row"><div class="k">点击行为（4 态共通）</div><div class="v"><b>整体 tap → Action 详情页</b>（带 Action ID 的 deep link）<br>Action 详情页是 app 内单条 Action 的完整视图（含一键完成、snooze、相关聊天上下文）</div></div>
+    </div>
+
+    <h3 class="sub">A3 · 4 个位置 Mockup · 同一时刻的 4 种形态</h3>
+    <p class="sub-desc">
+      锚点场景：早上 9:00，用户当下最该做的事是<b>护肤 routine</b>。下面 4 屏展示同一份 LA 数据在 4 个位置的呈现。
+    </p>
+
+    <div class="phone-row cols-4">
+      <!-- A3·1 Lock Screen -->
+      <div class="step">
+        <div class="step-head"><span class="step-num">A3·1</span><span class="step-name">Lock Screen 卡片</span></div>
+        <p class="step-desc">用户拿起手机解锁前看到。整体 tap → 解锁后跳 Action 详情页。</p>
+        <div class="frame-area">
+          <div class="phone">
+            <div class="screen">
+              <div class="lock-bg"></div>
+              <div class="lock-date">星期五 · 5月 9日</div>
+              <div class="lock-time">9:08</div>
+              <div class="la-card">
+                <div class="la-ip"><img src="ip.png" alt="Jovida"></div>
+                <div class="la-text">
+                  <div class="la-t1">今天的护肤 routine</div>
+                  <div class="la-t2">5 分钟 · 一起做</div>
+                </div>
+                <div class="la-emoji">✨</div>
+              </div>
+              <div class="lock-other-noti">
+                <div class="icon">💬</div>
+                <div class="text-l">
+                  <div class="ll1">王小明</div>
+                  <div class="ll2">在吗？刚刚那个文档…</div>
+                </div>
+              </div>
+              <div class="lock-bottom">
+                <div class="l-icon">🔦</div>
+                <div class="l-icon">📷</div>
+              </div>
+              <div class="home-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">字段</span>IP + emoji + 标题 + 副标题</div>
+      </div>
+
+      <!-- A3·2 DI Expanded -->
+      <div class="step">
+        <div class="step-head"><span class="step-num">A3·2</span><span class="step-name">Dynamic Island · Expanded</span></div>
+        <p class="step-desc">启动 LA / Alert 触发 / 用户长按时呈现。同 Lock Screen 字段。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div class="island expanded-big">
+                <div class="ex-top">
+                  <div class="ex-ip"><img src="ip.png" alt=""></div>
+                  <div class="ex-text">
+                    <div class="t1">今天的护肤 routine</div>
+                    <div class="t2">5 分钟 · 一起做</div>
+                  </div>
+                  <div class="ex-emoji">✨</div>
+                </div>
+              </div>
+              <div class="app-screen" style="filter:brightness(.78)">
+                <div class="statusbar"><span>9:08</span><span class="icons">●●● ▮</span></div>
+                <div style="padding:60px 16px 0;text-align:center;color:#7b8290;font-size:11px">用户当前在任意 app（如微信） · LA 自动展开几秒后缩回 compact</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">字段</span>同 Lock Screen · 整体 tap，无按钮</div>
+      </div>
+
+      <!-- A3·3 DI Compact -->
+      <div class="step">
+        <div class="step-head"><span class="step-num">A3·3</span><span class="step-name">Dynamic Island · Compact</span></div>
+        <p class="step-desc">用户日常视野默认态。Leading 是兔子，Trailing 是 Action emoji。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div class="island compact">
+                <div class="ip-mini"><img src="ip.png" alt=""></div>
+                <div class="right">✨</div>
+              </div>
+              <div class="app-screen" style="filter:brightness(.78)">
+                <div class="statusbar"><span>9:08</span><span class="icons">●●● ▮</span></div>
+                <div style="padding:60px 16px 0;text-align:center;color:#7b8290;font-size:11px">用户在浏览任意 app · 抬眼瞥一下知道：<br>"Jovida 还在 + 该护肤了"</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">字段</span>Leading=IP / Trailing=emoji · 摄像头中间区不能用</div>
+      </div>
+
+      <!-- A3·4 DI Minimal -->
+      <div class="step">
+        <div class="step-head"><span class="step-num">A3·4</span><span class="step-name">Dynamic Island · Minimal</span></div>
+        <p class="step-desc">多 LA 共存时（如音乐 / 计时器同时在），Jovida 被压缩成圆点。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <!-- Two islands: a music app's compact + jovida minimal -->
+              <div style="position:absolute;top:8px;left:12px;width:108px;height:32px;background:#000;border-radius:99px;display:flex;align-items:center;padding:3px 6px;justify-content:space-between;z-index:10">
+                <div style="width:24px;height:24px;border-radius:6px;background:#ff5b5b;display:flex;align-items:center;justify-content:center;font-size:11px">🎵</div>
+                <div style="font-size:11px;color:#9aff5b;font-weight:700;padding-right:6px">▮▮▮</div>
+              </div>
+              <div class="island minimal" style="left:auto;right:12px;transform:none;background:#000">
+                <div class="dot"><img src="ip.png" alt=""></div>
+              </div>
+              <div class="app-screen" style="filter:brightness(.78)">
+                <div class="statusbar"><span>9:08</span><span class="icons">●●● ▮</span></div>
+                <div style="padding:60px 16px 0;text-align:center;color:#7b8290;font-size:11px">同时听播客 + Jovida 都在 · Jovida 缩成圆点 · 点圆点切回 Jovida compact</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">字段</span>仅 IP 圆点 · 多 LA 共存兜底态</div>
+      </div>
+    </div>
+
+    <h3 class="sub">A4 · Action Now 一天演变示意</h3>
+    <p class="sub-desc">由 Agent 心跳决定切换。下面是一天典型节奏的 4 个时间点对照——其中 15:00 因为 Agent 判断"<b>当下没合适的 Action Now</b>"，LA 主动消失（不做装饰性占位）。</p>
+    <div class="timeline">
+      <div class="tl-cell">
+        <div class="tl-time">8:30 · 早上</div>
+        <div class="tl-title">✨ 该开始护肤 routine 了</div>
+        <div class="tl-sub">5 分钟 · 跟着我一步一步来</div>
+      </div>
+      <div class="tl-cell">
+        <div class="tl-time">12:15 · 中午</div>
+        <div class="tl-title">🍱 记录今天的午餐</div>
+        <div class="tl-sub">拍一张照 + 心情，1 分钟</div>
+      </div>
+      <div class="tl-cell empty">
+        <div class="tl-time">15:00 · 下午</div>
+        <div class="tl-title" style="color:var(--mute)">— LA 隐藏 —</div>
+        <div class="tl-sub">Agent 判定无合适 Action <br>不做装饰性占位</div>
+      </div>
+      <div class="tl-cell">
+        <div class="tl-time">21:30 · 临睡</div>
+        <div class="tl-title">🧘 睡前拉伸 12 分钟</div>
+        <div class="tl-sub">柔和音乐 + 跟练，今天结束</div>
+      </div>
+    </div>
+
+    <h3 class="sub">A5 · Backend 生命周期 · 创建 / 更新 / 消失</h3>
+    <p class="sub-desc">三段逻辑由 Agent + 推送服务共同负责。</p>
+    <div class="lifecycle">
+      <div class="lc create">
+        <div class="lc-head">CREATE · 创建</div>
+        <h4>用户打开 App 时</h4>
+        <ul>
+          <li>用户每次冷启 / 切回前台时，Agent 立即评估"当下最该做的 Action Now"</li>
+          <li>有合适 Action 时调 <code style="background:#000;padding:1px 5px;border-radius:4px;color:var(--green);font-family:'SF Mono',monospace;font-size:11.5px">Activity.request(...)</code> 创建 LA</li>
+          <li>同时拿到 push token + push-to-start token，<b>立即上报后端存档</b></li>
+          <li>无合适 Action 时不创建（也不假装创建）</li>
+        </ul>
+      </div>
+      <div class="lc update">
+        <div class="lc-head">UPDATE · 心跳更新</div>
+        <h4>Action Now 内容变化时</h4>
+        <ul>
+          <li>Agent 按<b>心跳节奏</b>（典型一天 2-4 次）评估 Action Now 是否需切换</li>
+          <li>需切换时，服务端通过 APNs 向 LA 的 push token 推 ContentState（≤4KB）</li>
+          <li>切到完全不同事件用 <b>alert update</b>（灵动岛展开 ~4s + 横幅 + 触觉 + 声音）</li>
+          <li>同事件内进度变化用<b>静默 update</b>（无 alert）· 内容偷偷换</li>
+        </ul>
+      </div>
+      <div class="lc end">
+        <div class="lc-head">END · 消失</div>
+        <h4>三种触发条件</h4>
+        <ul>
+          <li><b>Agent 判无合适 Action Now</b> → 服务端推 end，LA 主动消失</li>
+          <li><b>超 8h 时长上限</b> → 系统强制 end（再 stale 4h 后从锁屏移除）</li>
+          <li><b>用户左/右滑关闭</b> → 视觉 dismiss，App 不立即重启（视为弱负反馈）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box blue">
+      <div class="head">💰 成本节约规则</div>
+      <ul>
+        <li><b>超 8h 后 Agent 不再评估 / 不再推送</b>——因为系统强制 end 了，再算白搭</li>
+        <li>只在用户<b>下次打开 App</b> 时重启 Agent 评估循环（拿到新 push token，进入新 8h 窗口）</li>
+        <li>iOS 17.2+ 用户可启用 push-to-start token：服务端在用户没打开 App 时仍能远程拉起新 LA（接力陪伴）。但要遵守<b>每天 alert ≤ 2-3 次</b>的 HIG 上限</li>
+        <li>"超 8h 仍生成 Action Now 候选"是无效计算，应直接跳过——这是 Agent 队列的硬过滤条件</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION B: 快捷指令传图                                        -->
+  <!-- ============================================================ -->
+  <section id="b">
+    <div class="sec-title">
+      <div class="sec-num">SECTION B</div>
+      <h2>资源导入 · <b>快捷指令传图</b></h2>
+    </div>
+    <p class="sec-desc">
+      借用 iOS 系统能力 <b>双击背面 / 操作按钮 → 运行快捷指令</b>，把当前屏幕截图直接送进 Jovida。
+      用户不切 app、不复制文字、不打字描述——一个动作完成"我看到了一个想分享给 Jovida 的东西"的意图。
+    </p>
+
+    <h3 class="sub">B1 · 引导开启入口位置 · <span class="tag" style="background:var(--green-soft);color:var(--green)">首页底部</span> + <span class="tag" style="background:var(--orange-soft);color:var(--orange)">设置</span></h3>
+    <p class="sub-desc">两个入口同时存在：首页底部用户最常看到，设置页提供后续找回路径。</p>
+    <div class="phone-row cols-2">
+      <div class="step">
+        <div class="step-head"><span class="step-num">B1·1</span><span class="step-name">入口① · 首页底部 banner</span></div>
+        <p class="step-desc">未启用时在首页底部 Chat / Add 按钮上方出现一条引导 banner，引导首次开启。已启用后此 banner 自动收起。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div class="home-mock">
+                <div class="hm-status"><span>9:41</span><span style="font-size:9px;letter-spacing:1px">●●● ▮</span></div>
+                <div class="hm-tabs">
+                  <div class="hm-burger">≡</div>
+                  <div style="display:flex;gap:5px;flex:1;justify-content:center">
+                    <div class="hm-tab">Daily Actions</div>
+                    <div class="hm-tab dim">Quit Coffee</div>
+                  </div>
+                  <div class="hm-coffee">🔥 24</div>
+                </div>
+                <div class="hm-greet">
+                  <div class="bn"><img src="ip.png" alt=""></div>
+                  <div class="gtxt">早上好！今天先从一杯水开始 ✨</div>
+                </div>
+                <div class="hm-section">
+                  <div class="ttl">Daily Actions</div>
+                  <div class="hm-card">
+                    <div class="ic" style="background:linear-gradient(135deg,#ffe9c8,#ffcb88)"></div>
+                    <div class="info"><div class="h">Today's Skincare Routine</div><div class="d">5 min · 跟着我一步步来</div></div>
+                    <div class="arr">›</div>
+                  </div>
+                  <div class="hm-card">
+                    <div class="ic" style="background:linear-gradient(135deg,#cfe5cb,#aed5a8)"></div>
+                    <div class="info"><div class="h">Record Today's Lunch</div><div class="d">拍照 + 心情 1 min</div></div>
+                    <div class="arr">›</div>
+                  </div>
+                </div>
+                <!-- 引导 banner -->
+                <div style="position:absolute;bottom:60px;left:12px;right:12px;padding:10px 12px;background:linear-gradient(135deg,#1a1a1a,#2a2a30);border-radius:14px;color:#fff;display:flex;align-items:center;gap:9px;border:1px solid rgba(154,255,91,.3)" class="hi">
+                  <div style="width:30px;height:30px;border-radius:8px;background:rgba(154,255,91,.18);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📲</div>
+                  <div style="flex:1;font-size:10.5px;line-height:1.35">
+                    <div style="font-weight:800;color:#9aff5b">双击背面 1 秒传图给 Jovida</div>
+                    <div style="font-size:9.5px;color:rgba(255,255,255,.65);margin-top:1px">看到想存的内容？双击手机背面就行</div>
+                  </div>
+                  <div style="font-size:13px;color:#9aff5b">›</div>
+                </div>
+                <div class="hm-bottom">
+                  <div class="hm-btm-btn">💬 Chat</div>
+                  <div class="hm-btm-btn add">+ Add</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">入口</span>未启用 · 首页底部强提示 · 启用后收起</div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num">B1·2</span><span class="step-name">入口② · 设置 · 快捷指令传图</span></div>
+        <p class="step-desc">设置页放一项常驻入口，已启用 / 未启用都能在这里查看 / 调整。</p>
+        <div class="frame-area">
+          <div class="phone">
+            <div class="screen">
+              <div class="stg-screen">
+                <div class="stg-status"><span>9:41</span><span style="font-size:9px;letter-spacing:1px">●●● ▮</span></div>
+                <div class="stg-back"><div class="arr">‹</div><div class="ttl">设置</div></div>
+                <div class="stg-section-ttl">资源接入</div>
+                <div class="stg-list">
+                  <div class="stg-row hi" style="background:rgba(154,255,91,.06)">
+                    <div class="icn green">📲</div>
+                    <div>双击背面传图<br><span style="font-size:9.5px;font-weight:500;color:#7b8290">通过快捷指令把屏幕截图发到 Jovida</span></div>
+                    <div class="arr">›</div>
+                  </div>
+                  <div class="stg-row">
+                    <div class="icn">📋</div>
+                    <div>剪贴板悬浮陪伴<br><span style="font-size:9.5px;font-weight:500;color:#7b8290">复制内容自动收入暂存夹（即将上线）</span></div>
+                    <div class="arr">›</div>
+                  </div>
+                </div>
+                <div class="stg-section-ttl">账号</div>
+                <div class="stg-list">
+                  <div class="stg-row"><div class="icn green">👤</div><div>个人资料</div><div class="arr">›</div></div>
+                  <div class="stg-row"><div class="icn">🔒</div><div>权限管理</div><div class="arr">›</div></div>
+                  <div class="stg-row"><div class="icn">📜</div><div>条款与协议</div><div class="arr">›</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">入口</span>设置 → 资源接入 → 双击背面传图</div>
+      </div>
+    </div>
+
+    <h3 class="sub">B2 · 引导开启分步流程</h3>
+    <p class="sub-desc">两步：① 安装 Jovida 提供的快捷指令；② 教用户把它绑到双击背面 / 操作按钮。Apple 没开放编程接口配置 Back Tap，<b>只能图文教程引导</b>用户去系统设置自行操作。</p>
+    <div class="phone-row cols-3">
+      <div class="step">
+        <div class="step-head"><span class="step-num b">B2·1</span><span class="step-name">第一屏 · 安装快捷指令</span></div>
+        <p class="step-desc">用户点入口后进入此引导页。Jovida 把<b>预先配好的 .shortcut 文件</b>分享出去（一键安装到 iOS 快捷指令 app），免去用户自己配置。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,#1a1f2e,#0a0d18);color:#fff;padding:38px 18px 18px;display:flex;flex-direction:column">
+                <div style="font-size:10.5px;color:#9aa1ae;margin-bottom:6px;letter-spacing:.04em">第 1 步 / 共 2 步</div>
+                <div style="font-size:18px;font-weight:800;line-height:1.2;margin-bottom:6px">先安装 Jovida 快捷指令</div>
+                <div style="font-size:11.5px;color:#9aa1ae;line-height:1.5;margin-bottom:14px">点下面的按钮，会跳到 iOS 系统的"快捷指令"app，里面我们已经配好了"发到 Jovida"动作，点击「添加」即可。</div>
+                <div style="background:rgba(255,255,255,.06);border-radius:14px;padding:14px;border:1px dashed rgba(154,255,91,.3);text-align:center;margin-bottom:auto">
+                  <div style="font-size:30px">⚙️</div>
+                  <div style="font-size:11px;font-weight:700;color:#9aff5b;margin-top:4px">Send to Jovida Inbox</div>
+                  <div style="font-size:9.5px;color:#7b8290;margin-top:2px">一键安装到快捷指令 app</div>
+                </div>
+                <button style="background:#9aff5b;color:#0a3a0e;border:none;padding:11px;border-radius:14px;font-weight:800;font-size:13px;margin-top:10px">添加快捷指令</button>
+                <div style="font-size:9.5px;color:#7b8290;text-align:center;margin-top:6px">已经安装过？<span style="color:#9aff5b">跳过 →</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">引导</span>分享 .shortcut 文件 → iOS 一键安装</div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num b">B2·2</span><span class="step-name">第二屏 · 教用户绑双击背面</span></div>
+        <p class="step-desc">教程图文引导：设置 → 辅助功能 → 触控 → 轻点背面 → 双击 → 选择刚才的快捷指令。Jovida 不能代替操作，但可<b>"打开系统设置"按钮直跳设置 app</b>。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,#1a1f2e,#0a0d18);color:#fff;padding:38px 18px 18px;display:flex;flex-direction:column">
+                <div style="font-size:10.5px;color:#9aa1ae;margin-bottom:6px;letter-spacing:.04em">第 2 步 / 共 2 步</div>
+                <div style="font-size:18px;font-weight:800;line-height:1.2;margin-bottom:6px">绑到双击背面</div>
+                <div style="font-size:11.5px;color:#9aa1ae;line-height:1.5;margin-bottom:14px">在 iOS 系统设置里，把刚刚的快捷指令绑到"双击背面"动作上，往后看到想存的内容只需<b style="color:#9aff5b">双击手机背面</b>。</div>
+                <div style="background:rgba(255,255,255,.05);border-radius:12px;padding:10px 12px;font-size:10.5px;line-height:1.7;margin-bottom:auto">
+                  <div style="color:#9aff5b;font-weight:700;margin-bottom:4px">步骤路径</div>
+                  <div>① 设置 (Settings)</div>
+                  <div>② 辅助功能 (Accessibility)</div>
+                  <div>③ 触控 (Touch)</div>
+                  <div>④ 轻点背面 (Back Tap)</div>
+                  <div>⑤ 双击 → 选 "Send to Jovida"</div>
+                </div>
+                <button style="background:#9aff5b;color:#0a3a0e;border:none;padding:11px;border-radius:14px;font-weight:800;font-size:13px;margin-top:10px">打开系统设置</button>
+                <div style="font-size:9.5px;color:#7b8290;text-align:center;margin-top:6px">设好了？<span style="color:#9aff5b">完成 →</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">引导</span>无 API 自动配置 · 文字教程 + 跳系统设置</div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num b">B2·3</span><span class="step-name">完成屏 · 启用成功</span></div>
+        <p class="step-desc">两步都完成后回到 Jovida 进入此屏。给一次成功仪式感 + 提示用户立即试一下。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,#0a3a1a,#0a0d18);color:#fff;padding:38px 18px 18px;display:flex;flex-direction:column;text-align:center">
+                <div style="font-size:54px;margin:auto 0 8px">🎉</div>
+                <div style="font-size:18px;font-weight:800;line-height:1.2;margin-bottom:8px">已绑好！</div>
+                <div style="font-size:11.5px;color:#cdd2da;line-height:1.55;margin-bottom:22px">现在看到任何想存给 Jovida 的内容，<b style="color:#9aff5b">双击手机背面</b>就好。<br>截图会被自动送来，不打断你正在做的事。</div>
+                <div style="background:rgba(154,255,91,.08);border:1px solid rgba(154,255,91,.3);border-radius:12px;padding:11px 13px;font-size:10.5px;color:#cdd2da;text-align:left;line-height:1.5;margin-bottom:auto">
+                  <div style="color:#9aff5b;font-weight:700;margin-bottom:3px">立即试一下</div>
+                  打开微信看到一段想存的话，<b style="color:#fff">双击背面</b>，看 Jovida 能不能接到。
+                </div>
+                <button style="background:#9aff5b;color:#0a3a0e;border:none;padding:11px;border-radius:14px;font-weight:800;font-size:13px;margin-top:14px">回首页</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">引导</span>仪式感 + 立即试用建议</div>
+      </div>
+    </div>
+
+    <h3 class="sub">B3 · 触发快捷指令后 · 选项菜单（2 个 + 取消）</h3>
+    <p class="sub-desc">用户双击背面后，<b>iOS 系统底部弹出选项菜单</b>（Choose from Menu 是快捷指令原生组件）。本期收敛到 <b>2 个选项 + 取消</b>。</p>
+    <div class="phone-row cols-2">
+      <div class="step">
+        <div class="step-head"><span class="step-num b">B3·1</span><span class="step-name">在外部 app 内 · 双击背面后</span></div>
+        <p class="step-desc">用户当前在微信看到想存的对话，双击背面 → iOS 弹出系统级选项菜单（不离开微信，不打开 Jovida）。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div class="app-screen" style="filter:brightness(.86)">
+                <div class="statusbar"><span>14:22</span><span class="icons">●●● ▮</span></div>
+                <div style="padding:10px 16px;font-size:11.5px;color:#1a1a1a;font-weight:700">朋友 · 王小明</div>
+                <div style="padding:0 16px">
+                  <div style="display:flex;gap:6px;margin-top:8px">
+                    <div style="width:24px;height:24px;background:#ddd;border-radius:50%;flex-shrink:0"></div>
+                    <div style="background:#fff;border-radius:10px;padding:8px 11px;font-size:10.5px;color:#1a1a1a;max-width:200px;line-height:1.4">这家店真不错你也试试 → <span style="color:#1976d2;text-decoration:underline">https://www.dianping.com/...</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="bsheet-screen">
+                <div class="bsheet" style="padding-top:10px">
+                  <div class="grab"></div>
+                  <div style="font-size:10.5px;font-weight:800;color:#1a1a1a;text-align:center;margin-bottom:11px">把这张截图发到 Jovida</div>
+                  <div class="opt primary">
+                    <div class="oicn">🎯</div>
+                    <div class="otitle">发送到 Desire<div class="osub">用资源创建 / 加入已有 desire</div></div>
+                    <div class="oarr">›</div>
+                  </div>
+                  <div class="opt">
+                    <div class="oicn">📥</div>
+                    <div class="otitle">收入暂存夹<div class="osub">先存好稍后再看 / 处理</div></div>
+                    <div class="oarr">›</div>
+                  </div>
+                  <div class="cancel">取消</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">系统</span>iOS Choose from Menu · 2 选项 + 取消</div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num b">B3·2</span><span class="step-name">两个分支的去向</span></div>
+        <p class="step-desc">用户做出选择后的两条路径：</p>
+        <div style="background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;flex:1">
+          <div style="display:flex;gap:11px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--line)">
+            <div style="width:30px;height:30px;border-radius:7px;background:var(--green);color:#0a3a0e;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;font-weight:800">🎯</div>
+            <div>
+              <div style="font-size:13px;font-weight:800;color:var(--green);margin-bottom:3px">发送到 Desire</div>
+              <div style="font-size:12px;color:#cdd2da;line-height:1.55">立即<b>打开 Jovida</b>，首页弹出选择面板（详见 B4）<br><span style="color:var(--mute);font-size:11px">→ 用户切屏，要做立刻处理</span></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:11px">
+            <div style="width:30px;height:30px;border-radius:7px;background:var(--orange);color:#5a3a0e;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;font-weight:800">📥</div>
+            <div>
+              <div style="font-size:13px;font-weight:800;color:var(--orange);margin-bottom:3px">收入暂存夹</div>
+              <div style="font-size:12px;color:#cdd2da;line-height:1.55">不打开 Jovida ·  <b>iOS 系统通知</b>横幅"已收入暂存夹"<br><span style="color:var(--mute);font-size:11px">→ 用户不切屏，继续刚才的事</span></div>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding:9px 11px;background:rgba(110,200,255,.06);border:1px solid rgba(110,200,255,.25);border-radius:10px;font-size:11px;color:#cdd2da;line-height:1.55">
+            <b style="color:var(--blue)">💡 关键差异</b><br>
+            "发送到 Desire" = 现在就要处理<br>
+            "收入暂存夹" = 先存好以后再说
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub">B4 · "发送到 Desire" 后 · App 内弹窗</h3>
+    <p class="sub-desc">用户选了 "发送到 Desire" → 打开 Jovida → 首页自动弹出底部 sheet。<b>第一项是"创建新 desire"</b>（绿色实心强调），后面是<b>现存 desire 列表</b>（按最近 / 相关排序）。底部留有"<b>额外内容</b>"输入区，让用户在只有图片时也能传达明确意图。</p>
+    <div class="phone-row cols-2">
+      <div class="step">
+        <div class="step-head"><span class="step-num b">B4·1</span><span class="step-name">App 首页弹出选择面板</span></div>
+        <p class="step-desc">从首页（Daily Actions 列表上）滑出底部面板。截图缩略图在顶部，预览即将处理的资源。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div class="home-mock" style="filter:brightness(.7)">
+                <div class="hm-status"><span>14:22</span><span style="font-size:9px;letter-spacing:1px">●●● ▮</span></div>
+                <div class="hm-tabs">
+                  <div class="hm-burger">≡</div>
+                  <div style="display:flex;gap:5px;flex:1;justify-content:center">
+                    <div class="hm-tab">Daily Actions</div>
+                  </div>
+                </div>
+              </div>
+              <div class="bsheet-screen">
+                <div class="bsheet">
+                  <div class="grab"></div>
+                  <div class="preview">
+                    <div class="pic"></div>
+                    <div class="pinfo"><b>来自微信</b> · 截图<div class="pdim">14:22 · 大众点评 链接</div></div>
+                  </div>
+                  <div style="font-size:9.5px;color:#7b8290;font-weight:700;margin:0 4px 5px;letter-spacing:.04em">用这条资源做什么</div>
+                  <div class="opt primary">
+                    <div class="oicn">+</div>
+                    <div class="otitle">创建一个新 desire<div class="osub">从这条内容开一个新目标</div></div>
+                    <div class="oarr">›</div>
+                  </div>
+                  <div style="font-size:9.5px;color:#7b8290;font-weight:700;margin:11px 4px 5px;letter-spacing:.04em">或加入已有 desire</div>
+                  <div class="opt">
+                    <div class="oicn" style="background:linear-gradient(135deg,#cfe5cb,#aed5a8)">🥗</div>
+                    <div class="otitle">健康饮食 · 低油低盐<div class="osub">3 个相关资源 · 2 天前更新</div></div>
+                    <div class="oarr">›</div>
+                  </div>
+                  <div class="opt">
+                    <div class="oicn" style="background:linear-gradient(135deg,#ffe9c8,#ffcb88)">✨</div>
+                    <div class="otitle">每日护肤 routine<div class="osub">7 个资源 · 今早完成</div></div>
+                    <div class="oarr">›</div>
+                  </div>
+                  <div style="font-size:9.5px;color:#7b8290;text-align:center;font-weight:700;margin-top:5px">展开全部 12 个 ›</div>
+                  <div class="cancel" style="margin-top:8px">取消</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">弹窗</span>顶部预览 + 创建新 / 现存 desire 列表</div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num b">B4·2</span><span class="step-name">选了 desire 后 · 加额外文字</span></div>
+        <p class="step-desc">用户选好 desire 后，进入此次面板下半部——一个<b>富文本输入区</b>，方便用户补充"我为什么要存这个 / 想用它做什么"。可留空。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div class="home-mock" style="filter:brightness(.7)">
+                <div class="hm-status"><span>14:22</span><span style="font-size:9px;letter-spacing:1px">●●● ▮</span></div>
+              </div>
+              <div class="bsheet-screen">
+                <div class="bsheet">
+                  <div class="grab"></div>
+                  <div class="preview" style="padding:8px 10px">
+                    <div class="pic" style="width:38px;height:38px"></div>
+                    <div class="pinfo" style="font-size:10px"><b>加入「健康饮食 · 低油低盐」</b><div class="pdim">大众点评 · 餐厅链接</div></div>
+                  </div>
+                  <div style="font-size:9.5px;color:#7b8290;font-weight:700;margin:6px 4px 5px;letter-spacing:.04em">补充想说的（可选）</div>
+                  <div style="background:#f6f7f8;border-radius:11px;padding:11px 12px;min-height:80px;font-size:10.5px;color:#1a1a1a;line-height:1.5">
+                    朋友推荐的店，下周想去试 —— 看着挺健康的。
+                    <span style="color:#9ea4ad">想让我把这家加入低油的备选 list 吗？</span>
+                  </div>
+                  <div style="display:flex;gap:6px;margin-top:9px">
+                    <div style="font-size:10px;color:#7b8290;padding:5px 9px;background:rgba(0,0,0,.04);border-radius:99px">📷 加图</div>
+                    <div style="font-size:10px;color:#7b8290;padding:5px 9px;background:rgba(0,0,0,.04);border-radius:99px">🎙 录音</div>
+                  </div>
+                  <div style="display:flex;gap:7px;margin-top:11px">
+                    <div style="flex:1;padding:11px;text-align:center;font-size:11.5px;font-weight:700;color:#1a1a1a;background:#f0f3f8;border-radius:12px">取消</div>
+                    <div style="flex:2;padding:11px;text-align:center;font-size:11.5px;font-weight:800;color:#0a3a0e;background:#9aff5b;border-radius:12px">提交给 Jovida</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">弹窗</span>额外文字输入 + 提交确认</div>
+      </div>
+    </div>
+
+    <div class="info-box blue">
+      <div class="head">📐 为什么"额外文字输入"是必需的</div>
+      <ul>
+        <li><b>截图本身往往传达不了用户意图</b>——同一张餐厅截图，可能是"想去试" / "讨厌这家" / "类似风格的店"</li>
+        <li>留一个补字栏让用户低成本说一句话，<b>大幅降低后续 Agent 误解的概率</b></li>
+        <li>可留空——熟用户能很快靠图本身让 Agent 推断；新用户多半会写两句</li>
+        <li>支持加图 + 录音作为后期能力，本期先有文字输入即可</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION C: PIP 监听剪贴板（留空）                                -->
+  <!-- ============================================================ -->
+  <section id="c">
+    <div class="sec-title">
+      <div class="sec-num">SECTION C</div>
+      <h2>资源导入 · <b>PIP 监听剪贴板</b></h2>
+    </div>
+    <div class="info-box" style="background:rgba(123,140,160,.06);border-color:rgba(123,140,160,.25)">
+      <div class="head" style="color:#9aa1ae">本期暂略 · 不展开</div>
+      <ul style="padding-left:20px">
+        <li>该路径需要借用 PiP 灰色 API（参考 Para 翻译），合规风险与体验代价较高，本期不实施。</li>
+        <li>留位以保持完整通道感知 · 待 Apple Pasteboard 隐私 API 路径明朗后再做。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION D: 暂存夹                                              -->
+  <!-- ============================================================ -->
+  <section id="d">
+    <div class="sec-title">
+      <div class="sec-num">SECTION D</div>
+      <h2>资源导入 · <b>暂存夹</b></h2>
+    </div>
+    <p class="sec-desc">
+      暂存夹是<b>导入资源的"先存后处理"中转站</b>。用户来不及当下处理的截图、链接、文字，都先丢这里，可<b>单选</b>处理，也可<b>多选批量</b>处理——批量处理的去向同 B4（创建 / 加入 desire + 额外文字）。
+    </p>
+
+    <h3 class="sub">D1 · 入口位置 · <span class="tag" style="background:var(--green-soft);color:var(--green)">首页底部</span> + <span class="tag" style="background:var(--blue-soft);color:var(--blue)">侧边栏</span></h3>
+    <p class="sub-desc">两个入口同时存在：首页底部最常用（用户处理日常资源），侧边栏作为"我有什么资源"全局视图的一部分。</p>
+    <div class="phone-row cols-2">
+      <div class="step">
+        <div class="step-head"><span class="step-num o">D1·1</span><span class="step-name">入口① · 首页底部 Inbox 按钮</span></div>
+        <p class="step-desc">底部 Chat / Add 按钮区扩展为 Chat / Inbox / Add 三按钮。Inbox 上有未处理数量徽标，hint 用户"你有 N 条没处理的资源"。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div class="home-mock">
+                <div class="hm-status"><span>14:22</span><span style="font-size:9px;letter-spacing:1px">●●● ▮</span></div>
+                <div class="hm-tabs">
+                  <div class="hm-burger">≡</div>
+                  <div style="display:flex;gap:5px;flex:1;justify-content:center">
+                    <div class="hm-tab">Daily Actions</div>
+                    <div class="hm-tab dim">Quit Coffee</div>
+                  </div>
+                  <div class="hm-coffee">🔥 24</div>
+                </div>
+                <div class="hm-greet"><div class="bn"><img src="ip.png" alt=""></div><div class="gtxt">下午好！中午记录了吗？</div></div>
+                <div class="hm-section">
+                  <div class="ttl">Daily Actions</div>
+                  <div class="hm-card">
+                    <div class="ic" style="background:linear-gradient(135deg,#ffe9c8,#ffcb88)"></div>
+                    <div class="info"><div class="h">Today's Skincare Routine</div><div class="d">5 min · 跟着我一步步来</div></div>
+                    <div class="arr">›</div>
+                  </div>
+                  <div class="hm-card">
+                    <div class="ic" style="background:linear-gradient(135deg,#cfe5cb,#aed5a8)"></div>
+                    <div class="info"><div class="h">Record Today's Lunch</div><div class="d">拍照 + 心情 1 min</div></div>
+                    <div class="arr">›</div>
+                  </div>
+                </div>
+                <div class="hm-bottom" style="gap:6px">
+                  <div class="hm-btm-btn" style="flex:1.2">💬 Chat</div>
+                  <div class="hm-btm-btn hi" style="flex:1.4;background:linear-gradient(135deg,#1c2030,#0d0f15);color:#fff;border:1px solid rgba(154,255,91,.5);position:relative">
+                    📥 Inbox
+                    <span style="position:absolute;top:-4px;right:-4px;background:#ff5b5b;color:#fff;font-size:9px;padding:1px 5px;border-radius:99px;font-weight:800">7</span>
+                  </div>
+                  <div class="hm-btm-btn add" style="flex:1">+ Add</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">入口</span>首页底部 Chat / Inbox / Add · 红点未处理数</div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num o">D1·2</span><span class="step-name">入口② · 侧边栏 · 暂存夹卡片</span></div>
+        <p class="step-desc">从首页左上汉堡菜单滑出。<b>暂存夹</b>放在 Credits 卡片下方，作为"我的资源"概览的一部分，与 My Goals 平级。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div class="sidebar-screen">
+                <div class="sb-status"><span>14:22</span><span style="font-size:9px;letter-spacing:1px">●●● ▮</span></div>
+                <div class="sb-user">
+                  <div style="font-size:14px;font-weight:800">大号猫 ✏️</div>
+                  <div class="stg-icn">⚙</div>
+                </div>
+                <div style="padding:0 14px 6px;font-size:9.5px;color:#7b8290">Jovida ID: 23370572</div>
+                <div class="sb-credits">
+                  <div><div class="lab">Credits ⓘ</div><div class="num">46,000 ›</div></div>
+                  <div class="car">🥕</div>
+                </div>
+                <div class="sb-inbox hi">
+                  <div class="ic">📥</div>
+                  <div class="label">暂存夹</div>
+                  <div class="badge">7 待处理</div>
+                </div>
+                <div class="sb-mygoal">My Goal</div>
+                <div class="sb-pills">
+                  <div class="sb-pill"><span class="ic">🧭</span>Explore</div>
+                  <div class="sb-pill"><span class="ic" style="color:#9aff5b">⊕</span>Add a goal</div>
+                </div>
+                <div class="sb-row" style="background:rgba(0,0,0,.04)">
+                  <div class="ic" style="background:transparent;font-size:10px;color:#7b8290">📂</div>
+                  <div class="label" style="color:#7b8290">Draft</div>
+                  <div style="color:#7b8290">1</div>
+                  <div class="arr">›</div>
+                </div>
+                <div class="sb-row">
+                  <div class="ic" style="background:linear-gradient(135deg,#fde6c2,#fdcfa4)">🖼</div>
+                  <div class="label">每日名画赏析</div>
+                  <div class="arr">›</div>
+                </div>
+                <div class="sb-row">
+                  <div class="ic" style="background:linear-gradient(135deg,#cfe5cb,#aed5a8)">⚖️</div>
+                  <div class="label">Weight Loss</div>
+                  <div class="arr">›</div>
+                </div>
+                <div class="sb-row">
+                  <div class="ic" style="background:linear-gradient(135deg,#ffe9c8,#ffcb88)">✨</div>
+                  <div class="label">Skincare Routine</div>
+                  <div class="arr">›</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">入口</span>侧边栏 · Credits 下方 / My Goal 上方</div>
+      </div>
+    </div>
+
+    <h3 class="sub">D2 · 暂存夹详情页 · 混合 list（图 / 文 / 链接）</h3>
+    <p class="sub-desc">三种 item 类型在同一 list 中混排，靠左侧缩略图区视觉区分；右上角有"<b>多选</b>"入口。</p>
+    <div class="phone-row cols-3">
+      <div class="step">
+        <div class="step-head"><span class="step-num o">D2·1</span><span class="step-name">详情页 · 默认浏览</span></div>
+        <p class="step-desc">混合 list · 三类 item 各自有合适的视觉摘要：截图缩略图 / 纯文本预览 / 链接卡片（解析出标题副标题 + 域名 favicon）。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div class="inbox-screen">
+                <div class="ib-status"><span>14:22</span><span style="font-size:9px;letter-spacing:1px">●●● ▮</span></div>
+                <div class="ib-head"><div class="ib-back">‹</div><div class="ib-title">暂存夹</div><div class="ib-edit">多选</div></div>
+                <div class="ib-stats">7 条未处理 · 最早 3 天前</div>
+                <div class="ib-list">
+                  <div class="ib-item">
+                    <div class="ib-thumb image">🖼</div>
+                    <div class="ib-body">
+                      <div class="ib-h">来自微信 · 截图</div>
+                      <div class="ib-d">朋友推荐的店，看着挺健康</div>
+                      <div class="ib-meta">14:22 · 截图 · 来自 微信</div>
+                    </div>
+                  </div>
+                  <div class="ib-item">
+                    <div class="ib-thumb link">🔗</div>
+                    <div class="ib-body">
+                      <div class="ib-h">Anthropic Claude 4.7 发布</div>
+                      <div class="ib-d">Claude 4.7 在编程能力和长上下文上有重大突破…</div>
+                      <div class="ib-meta">11:08 · 链接 · anthropic.com</div>
+                    </div>
+                  </div>
+                  <div class="ib-item">
+                    <div class="ib-thumb text">Aa</div>
+                    <div class="ib-body">
+                      <div class="ib-h">朋友说的话</div>
+                      <div class="ib-d">每天少喝咖啡，多喝水。坚持 21 天试试看，给自己一个机会。</div>
+                      <div class="ib-meta">昨天 · 文本 · 来自 剪贴板</div>
+                    </div>
+                  </div>
+                  <div class="ib-item">
+                    <div class="ib-thumb image">🖼</div>
+                    <div class="ib-body">
+                      <div class="ib-h">YouTube · 睡眠科普</div>
+                      <div class="ib-d">来自 youtube.com 的视频缩略图</div>
+                      <div class="ib-meta">2 天前 · 链接 · youtube.com</div>
+                    </div>
+                  </div>
+                  <div class="ib-item">
+                    <div class="ib-thumb link">🔗</div>
+                    <div class="ib-body">
+                      <div class="ib-h">5 个新闻链接 · 一组</div>
+                      <div class="ib-d">关于 AI 监管的几篇深度文，想分 3 个月慢读</div>
+                      <div class="ib-meta">3 天前 · 链接组 · 自动归类</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">详情</span>右上"多选" · item 类型左侧缩略图区分</div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num o">D2·2</span><span class="step-name">单选 · 点击单 item 处理</span></div>
+        <p class="step-desc">点击单条 item → 直接走与 B4 相同的"创建新 / 加入 desire + 额外文字"流程。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div class="inbox-screen" style="filter:brightness(.6)">
+                <div class="ib-status"><span>14:22</span><span style="font-size:9px;letter-spacing:1px">●●● ▮</span></div>
+                <div class="ib-head"><div class="ib-back">‹</div><div class="ib-title">暂存夹</div></div>
+              </div>
+              <div class="bsheet-screen">
+                <div class="bsheet">
+                  <div class="grab"></div>
+                  <div class="preview">
+                    <div class="pic"></div>
+                    <div class="pinfo"><b>处理这条资源</b><div class="pdim">来自微信 · 截图 · 14:22</div></div>
+                  </div>
+                  <div style="font-size:9.5px;color:#7b8290;font-weight:700;margin:0 4px 5px;letter-spacing:.04em">用这条资源做什么</div>
+                  <div class="opt primary">
+                    <div class="oicn">+</div>
+                    <div class="otitle">创建一个新 desire<div class="osub">从这条内容开一个新目标</div></div>
+                    <div class="oarr">›</div>
+                  </div>
+                  <div style="font-size:9.5px;color:#7b8290;font-weight:700;margin:11px 4px 5px;letter-spacing:.04em">或加入已有 desire</div>
+                  <div class="opt">
+                    <div class="oicn" style="background:linear-gradient(135deg,#cfe5cb,#aed5a8)">🥗</div>
+                    <div class="otitle">健康饮食 · 低油低盐<div class="osub">3 个相关资源</div></div>
+                    <div class="oarr">›</div>
+                  </div>
+                  <div class="opt">
+                    <div class="oicn" style="background:linear-gradient(135deg,#ffe9c8,#ffcb88)">✨</div>
+                    <div class="otitle">每日护肤 routine<div class="osub">7 个资源</div></div>
+                    <div class="oarr">›</div>
+                  </div>
+                  <div class="cancel" style="margin-top:8px">取消</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">同 B4</span>单条 item 同样进入 desire 选择流程</div>
+      </div>
+
+      <div class="step">
+        <div class="step-head"><span class="step-num o">D2·3</span><span class="step-name">多选 · 批量处理</span></div>
+        <p class="step-desc">点右上"多选"进入此态。每条 item 左侧出现选择圈。底部出现 floating action bar，显示已选数 + "处理"按钮。点击"处理"也走 B4 同款流程，但作为<b>资源组</b>整体加入 desire。</p>
+        <div class="frame-area">
+          <div class="phone has-island">
+            <div class="screen">
+              <div class="inbox-screen">
+                <div class="ib-status"><span>14:22</span><span style="font-size:9px;letter-spacing:1px">●●● ▮</span></div>
+                <div class="ib-head"><div class="ib-back">取消</div><div class="ib-title">已选 3 条</div><div class="ib-edit">全选</div></div>
+                <div class="ib-stats">点击 item 选择 / 取消 · 完成后点处理</div>
+                <div class="ib-list">
+                  <div class="ib-item chk">
+                    <div class="ib-chk">✓</div>
+                    <div class="ib-thumb image" style="width:36px;height:36px;font-size:13px">🖼</div>
+                    <div class="ib-body">
+                      <div class="ib-h">来自微信 · 截图</div>
+                      <div class="ib-d">朋友推荐的店</div>
+                      <div class="ib-meta">14:22 · 截图</div>
+                    </div>
+                  </div>
+                  <div class="ib-item chk">
+                    <div class="ib-chk">✓</div>
+                    <div class="ib-thumb link" style="width:36px;height:36px;font-size:13px">🔗</div>
+                    <div class="ib-body">
+                      <div class="ib-h">Anthropic Claude 4.7 发布</div>
+                      <div class="ib-d">Claude 4.7 编程能力突破</div>
+                      <div class="ib-meta">11:08 · anthropic.com</div>
+                    </div>
+                  </div>
+                  <div class="ib-item">
+                    <div class="ib-chk"></div>
+                    <div class="ib-thumb text" style="width:36px;height:36px;font-size:11px">Aa</div>
+                    <div class="ib-body">
+                      <div class="ib-h">朋友说的话</div>
+                      <div class="ib-d">每天少喝咖啡，多喝水…</div>
+                      <div class="ib-meta">昨天 · 文本</div>
+                    </div>
+                  </div>
+                  <div class="ib-item chk">
+                    <div class="ib-chk">✓</div>
+                    <div class="ib-thumb link" style="width:36px;height:36px;font-size:13px">🔗</div>
+                    <div class="ib-body">
+                      <div class="ib-h">5 个新闻链接 · 一组</div>
+                      <div class="ib-d">分 3 个月慢读</div>
+                      <div class="ib-meta">3 天前 · 链接组</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="ib-bottom-bar">
+                  <div class="ib-cnt">已选 3 条</div>
+                  <div class="ib-act">批量处理 →</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cap"><span class="gp">多选</span>底部 bar · 批量处理同 B4 流程</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SECTION E: Agent / 后端                                        -->
+  <!-- ============================================================ -->
+  <section id="e">
+    <div class="sec-title">
+      <div class="sec-num">SECTION E</div>
+      <h2>Agent / 后端 · <b>资源记忆机制</b></h2>
+    </div>
+    <p class="sec-desc">
+      <b>核心原则：用户导入的资源要被很好地存住</b>，不能淹没在 history 长河里——但<b>不应该专门开一个新字段 / 表来存"资源"</b>。
+      正确的做法是用 Agent 已有的<b>记忆机制（memory）</b> 承载资源关联，让资源天然成为某个 desire 的一部分。
+    </p>
+
+    <h3 class="sub">E1 · 例子 · 长程任务的资源化</h3>
+    <div class="phone-row cols-2">
+      <div class="step" style="padding:18px 20px">
+        <div class="step-head"><span class="step-num">E1·1</span><span class="step-name">100 个新闻链接 · 分 3 个月读完</span></div>
+        <p class="step-desc" style="margin-bottom:14px">用户：在多个 session 里分批向 Jovida 发了 100 个 AI 监管类新闻链接。最近一次说"<b>这些分 3 个月帮我读完</b>"。</p>
+        <pre class="code"><span class="cm"># 期望的 Agent 行为</span>
+<span class="kw">memory</span>:
+  <span class="kw">desire</span>: ai_regulation_reading
+  <span class="kw">resources</span>:
+    - 100 个 链接（哪天来 / 哪个 session）
+    - 用户的指令："3 个月慢读"
+  <span class="kw">deduced_plan</span>:
+    - 每天读 ~1.1 个，分类滚动
+    - 进度跟踪挂在 desire 上
+    - LA Action Now 偶尔变 "今天读这一篇"</pre>
+        <p class="step-desc" style="margin-top:6px"><b style="color:var(--green)">关键</b>：100 个链接<b>不是 100 条 inbox 待办</b>，而是同一个 desire 下的资源池。Agent 推理出节奏 + 顺序，每天主动选一篇推到 LA。</p>
+      </div>
+
+      <div class="step" style="padding:18px 20px">
+        <div class="step-head"><span class="step-num">E1·2</span><span class="step-name">YouTube 视频迭代已有 desire</span></div>
+        <p class="step-desc" style="margin-bottom:14px">用户：传一个 YouTube 视频链接（讲睡眠科学），说"<b>用这个指导我睡觉变好</b>"。已有 desire：「规律作息修复」。</p>
+        <pre class="code"><span class="cm"># 期望的 Agent 行为</span>
+<span class="kw">memory</span>:
+  <span class="kw">desire</span>: sleep_improvement
+  <span class="kw">resources</span>:
+    - <span class="st">"YouTube/sleep-science"</span> 视频
+    - 用户意图："用它指导睡觉"
+  <span class="kw">action</span>:
+    - 自动转写视频要点
+    - 把要点融入 desire 的执行计划
+    - 之后的 action now 引用其中片段
+    - 例：21:30 LA = "今天试视频里的 4-7-8 呼吸法"</pre>
+        <p class="step-desc" style="margin-top:6px"><b style="color:var(--green)">关键</b>：资源不是孤立条目，<b>融入既有 desire</b> 改写它的执行计划，让 desire 更具体、更个性化。</p>
+      </div>
+    </div>
+
+    <h3 class="sub">E2 · 实现 · 用 memory 不用专字段</h3>
+    <div class="def-box">
+      <div class="head">设计取舍</div>
+      <div class="core">资源的生命周期是 desire 的子集。</div>
+      <div class="meta">所以不开 "resources" 表 / 字段，而是把每个资源作为 memory 节点挂在 desire 下：</div>
+      <ul>
+        <li><b>新建资源</b> → 写入 memory：<code style="background:#000;padding:1px 5px;border-radius:4px;color:var(--green);font-family:'SF Mono',monospace;font-size:11.5px">desire_id + resource_descriptor + user_intent + timestamp</code></li>
+        <li><b>查询资源</b> → 在 desire 视图下检索该 desire 的 memory 节点子集</li>
+        <li><b>资源消费</b> → 写入 consumption memory（"已读 / 已用 / 已转化为 action"），形成进度</li>
+        <li><b>跨 desire 资源</b> → 同一个资源 id 可被多个 desire 引用（不复制内容，只多一条 memory link）</li>
+      </ul>
+    </div>
+
+    <div class="info-box">
+      <div class="head">📐 为什么不专门开字段</div>
+      <ul>
+        <li>资源天然有"主体"——它属于某个 desire（或要变成新 desire）。<b>把它和 desire 绑在一起才有意义</b>。</li>
+        <li>专开字段会让资源变成"另一个收件箱"——用户进来翻一遍，毫无目的。我们要的是"资源服务于目标"。</li>
+        <li>memory 机制本来就是为长程相关性设计的——存 100 个链接、跨 3 个月引用，不需要新基建。</li>
+        <li>暂存夹是<b>UI 概念</b>（未归类资源的过渡视图），不应该是<b>数据存储</b>层。两者分离。</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <div>Jovida v0.17 · 2026-05-09 · 产品需求与原型 v2 · Wolves</div>
+    <div><a href="../0508/index.html">← v1 (0508)</a> · <a href="https://mawillswater.github.io/jovida-v017-inbox/apple_docs_reading_list.html">Apple Docs Reading List ↗</a></div>
+  </footer>
+
+</div>
+</body>
+</html>
