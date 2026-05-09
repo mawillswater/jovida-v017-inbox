@@ -635,6 +635,85 @@ p.sub-desc b{color:#fff}
         </div>
       </div>
     </div>
+
+    <!-- A7 · 更新 LA 时如何让用户注意到 -->
+    <h3 class="sub">A7 · 更新 Live Activity 时如何让用户注意到 · AlertConfiguration<span class="tag" style="background:rgba(255,200,140,.16);color:#ffc88c">关键机制</span></h3>
+    <p class="sub-desc">用户场景：早上 Jovida 创建了护肤 LA，到中午要把内容换成"午餐 desire"——<b>默认这种 update 是静默的</b>，锁屏卡偷偷换内容、灵动岛字偷偷变。要让用户注意到，必须在 update 时附加 <b>AlertConfiguration</b>。下面把整个"注意力强度光谱"摆出来，配 Jovida 的取舍规则。</p>
+
+    <div class="info-box">
+      <div class="head">📘 核心机制 · 默认静默 vs Alert 触发自动展开</div>
+      <ul>
+        <li><b>静默 update</b>：调 <code style="background:rgba(0,0,0,.3);padding:1px 6px;border-radius:4px;color:#9aff5b;font-family:'SF Mono','JetBrains Mono',monospace;font-size:12px">activity.update(content)</code> 不带 alert · 锁屏卡和灵动岛 compact 内容偷偷换 · 用户只有自己抬眼看才发现。</li>
+        <li><b>带 AlertConfiguration 的 update</b>：附加一个 alert 配置对象，触发四件事同时发生 ——<br>① 灵动岛<b style="color:#9aff5b">自动展开 ~4 秒</b>，再缩回 compact（无需用户长按）<br>② 锁屏 / 主屏弹出<b>横幅</b>（如果当前不在 Jovida app 内）<br>③ <b>触觉反馈</b><br>④ <b>提示音</b>（默认或自定义）</li>
+        <li><b>服务端 push 同理</b>：APNs payload 里加 <code style="background:rgba(0,0,0,.3);padding:1px 6px;border-radius:4px;color:#9aff5b;font-family:'SF Mono','JetBrains Mono',monospace;font-size:12px">alert</code> 字段就触发同样的展开 + 横幅。</li>
+      </ul>
+    </div>
+
+    <!-- 注意力光谱表 -->
+    <div class="info-box" style="background:rgba(110,200,255,.05);border-color:rgba(110,200,255,.28)">
+      <div class="head" style="color:#6ec8ff">🎚 注意力强度光谱（从重到轻）· 设计稿可挑哪一档</div>
+      <div style="margin-top:12px;display:grid;grid-template-columns:120px 1fr 200px;gap:10px;font-size:13px">
+        <div style="font-weight:800;color:#fff;border-bottom:1px solid #232830;padding-bottom:8px">调用方式</div>
+        <div style="font-weight:800;color:#fff;border-bottom:1px solid #232830;padding-bottom:8px">用户感受</div>
+        <div style="font-weight:800;color:#fff;border-bottom:1px solid #232830;padding-bottom:8px">Jovida 适用场景</div>
+
+        <div style="color:#ff9a9a;font-weight:700">Alert + sound +<br><code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;color:#ff9a9a;font-family:'SF Mono','JetBrains Mono',monospace;font-size:11px">.timeSensitive</code></div>
+        <div style="color:#cdd2da;line-height:1.55">展开 + 横幅 + 声音 +<b style="color:#ff9a9a"> 穿透 Focus / 勿扰</b>。等同于一条强 push。</div>
+        <div style="color:#9aa1ae;line-height:1.55">几乎不用 · 留给真正紧急的事（如健康预警）</div>
+
+        <div style="color:#ffc88c;font-weight:700">Alert + sound<br>（默认）</div>
+        <div style="color:#cdd2da;line-height:1.55">灵动岛展开 ~4s + 锁屏横幅 + 声音 + 触觉</div>
+        <div style="color:#9aa1ae;line-height:1.55"><b>事件锚点</b> · 早 7 点护肤、午间打卡、睡前拉伸</div>
+
+        <div style="color:#ffd166;font-weight:700">Alert + <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;color:#ffd166;font-family:'SF Mono','JetBrains Mono',monospace;font-size:11px">sound: nil</code></div>
+        <div style="color:#cdd2da;line-height:1.55">展开 + 横幅 + 触觉，<b>无声</b></div>
+        <div style="color:#9aa1ae;line-height:1.55">一般状态切换 · 如"完成水分目标"</div>
+
+        <div style="color:#9aff5b;font-weight:700">仅 update<br>（无 alert）</div>
+        <div style="color:#cdd2da;line-height:1.55"><b>静默换内容</b> · 不展开 · 不弹横幅 · 不响</div>
+        <div style="color:#9aa1ae;line-height:1.55"><b>进度滚动</b> · 数字 +1、文案微调、兔子心情变化</div>
+
+        <div style="color:#7b8290;font-weight:700">改 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;color:#7b8290;font-family:'SF Mono','JetBrains Mono',monospace;font-size:11px">staleDate</code></div>
+        <div style="color:#cdd2da;line-height:1.55">文字变灰，标记"开始过期"，无任何提示音 / 展开</div>
+        <div style="color:#9aa1ae;line-height:1.55">"刚刚的 desire 该重新对齐了"暗示</div>
+      </div>
+    </div>
+
+    <!-- HIG 红线 -->
+    <div class="info-box" style="background:rgba(255,138,138,.05);border-color:rgba(255,138,138,.32)">
+      <div class="head" style="color:#ff9a9a">⚠️ HIG 硬约束 · alerts sparingly</div>
+      <ul>
+        <li>原文：<i style="color:#ffc88c">"Use alerts sparingly and only for important changes. Frequent alerts can feel intrusive and may prompt people to disable Live Activities for your app."</i></li>
+        <li><b>频繁 alert = 用户去设置里关掉 Jovida 的 LA = 这个渠道直接死亡</b>。Apple 这条是审核会查的红线，不是建议。</li>
+        <li><b>每天 alert 上限建议 2-3 次</b>（早起 / 午间 / 临睡），其余用静默 update。</li>
+      </ul>
+    </div>
+
+    <!-- Jovida 实操规则 -->
+    <div class="def-box">
+      <div class="head">Jovida MVP 实操规则 · 把一天划成两类事件</div>
+      <div class="meta">设计稿和工程实现都要严格遵守这张分配表，每个 update 入口都明确知道走哪一档：</div>
+      <div style="display:grid;grid-template-columns:140px 1fr;gap:14px;margin-top:12px;font-size:13.5px">
+        <div style="color:#ffc88c;font-weight:800;border-right:2px solid #ffc88c;padding-right:14px;text-align:right">事件锚点<br><span style="color:#9aa1ae;font-size:11px;font-weight:400">每天 2-3 次</span></div>
+        <div style="color:#cdd2da;line-height:1.6"><b>Alert + sound</b> · 早起护肤 / 午间 desire checkin / 睡前拉伸 ——<br>这是用户"该停下来看一眼 Jovida"的时刻</div>
+
+        <div style="color:#9aff5b;font-weight:800;border-right:2px solid #9aff5b;padding-right:14px;text-align:right">进度滚动<br><span style="color:#9aa1ae;font-size:11px;font-weight:400">高频，全天</span></div>
+        <div style="color:#cdd2da;line-height:1.6"><b>静默 update</b> · 兔子心情、数字 +1、鼓励语轮换、staleDate 暗示 ——<br>不打扰，让"在场感"通过抬眼瞥一下传达</div>
+
+        <div style="color:#ff9a9a;font-weight:800;border-right:2px solid #ff9a9a;padding-right:14px;text-align:right">特殊提醒<br><span style="color:#9aa1ae;font-size:11px;font-weight:400">极少</span></div>
+        <div style="color:#cdd2da;line-height:1.6"><b>Alert + <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;color:#ff9a9a;font-family:'SF Mono','JetBrains Mono',monospace;font-size:11.5px">.timeSensitive</code></b> · 真正紧急、必须立刻处理（如健康风险信号、强承诺到期）</div>
+      </div>
+    </div>
+
+    <!-- 教育性提醒 -->
+    <div class="info-box" style="background:rgba(154,255,91,.05);border-color:rgba(154,255,91,.28)">
+      <div class="head" style="color:#9aff5b">💡 隐藏招 · onboarding 教用户"长按灵动岛"</div>
+      <ul>
+        <li>除了 alert 自动展开外，<b>用户长按 compact 灵动岛</b>也能看大卡片。但用户多半不知道这个手势。</li>
+        <li>Jovida 第一次创建 LA 时，可以配一条<b>引导卡片</b>："试试长按灵动岛看大图" —— 把这个手势行为种到用户肌肉记忆里，让被动陪伴升级成主动召唤。</li>
+        <li>这是产品教育（非 API 范畴），但对体验影响显著。建议在 onboarding 设计稿中预留这一步。</li>
+      </ul>
+    </div>
   </section>
 
   <!-- ================================================================== -->
